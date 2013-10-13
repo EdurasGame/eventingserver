@@ -26,6 +26,7 @@ public class Server implements ServerInterface {
 	private int port;
 	private String name;
 
+	EventHandler eventHandler;
 	ServerSender serverSender;
 	ServerReceiver serverReceiver;
 	final HashMap<Integer, ServerClient> clients;
@@ -263,8 +264,8 @@ public class Server implements ServerInterface {
 
 	@Override
 	public boolean setEventHandler(EventHandler eventHandler) {
-		// TODO Auto-generated method stub
-		return false;
+		this.eventHandler = eventHandler;
+		return true;
 	}
 
 	@Override

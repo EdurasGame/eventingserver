@@ -1,11 +1,13 @@
 package de.eduras.eventingserver;
 
+import java.util.LinkedList;
+
 public class NetworkMessageSerializer {
 	public static String serializeEvent(Event event) {
 		return null;
 	}
 
-	public static Event deserializeEvent(String eventStr) {
+	public static LinkedList<Event> deserializeEvent(String eventStr) {
 		return null;
 	}
 

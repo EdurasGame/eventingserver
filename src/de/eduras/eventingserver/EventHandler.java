@@ -13,6 +13,6 @@ public interface EventHandler {
 	 * @param event
 	 *            The event to handle.
 	 */
-	public void handleNetworkEvent(Event event);
+	public void handleEvent(Event event);
 
 }
