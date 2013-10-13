@@ -1,11 +1,7 @@
-package de.eduras.eventingserver.server;
+package de.eduras.eventingserver;
 
 import java.util.LinkedList;
 
-import de.eduras.eventingserver.Event;
-import de.eduras.eventingserver.EventHandler;
-import de.eduras.eventingserver.NetworkEventHandler;
-import de.eduras.eventingserver.NetworkPolicy;
 
 public interface ServerInterface {
 

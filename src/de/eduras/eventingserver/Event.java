@@ -13,6 +13,10 @@ public abstract class Event {
 
 	}
 
+	public enum PacketType {
+		TCP, UDP;
+	}
+
 	private EventNumber eventNumber;
 
 	/**

@@ -1,6 +1,5 @@
-package de.eduras.eventingserver.client;
+package de.eduras.eventingserver;
 
-import de.eduras.eventingserver.Event;
 
 public interface ClientInterface {
 
