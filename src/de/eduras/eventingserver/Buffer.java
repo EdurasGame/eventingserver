@@ -3,6 +3,8 @@ package de.eduras.eventingserver;
 import java.util.NoSuchElementException;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import Exceptions.BufferIsEmptyException;
+
 /**
  * A Buffer is a thread-safe linked list of Strings. Elements are returned in
  * same order they where added.

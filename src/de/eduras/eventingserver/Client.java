@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
+import Exceptions.ConnectionLostException;
+
 import de.eduras.eventingserver.Event.PacketType;
 
 /**

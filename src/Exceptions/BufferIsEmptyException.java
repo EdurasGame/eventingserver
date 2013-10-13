@@ -1,4 +1,4 @@
-package de.eduras.eventingserver;
+package Exceptions;
 
 import java.util.NoSuchElementException;
 
