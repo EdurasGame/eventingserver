@@ -14,7 +14,7 @@ import java.net.SocketException;
  * @author Florian Mai <florian.ren.mai@googlemail.com>
  * 
  */
-public class ClientReceiver extends Thread {
+class ClientReceiver extends Thread {
 
 	private BufferedReader messageReader = null;
 

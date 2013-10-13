@@ -10,7 +10,7 @@ import java.util.LinkedList;
  *         More detailed, the incoming message is deserialized and forwarded to
  *         the gamelogic or to the network listener.
  */
-public class ClientParser extends Thread {
+class ClientParser extends Thread {
 
 	Client client;
 	private final Buffer inputBuffer;

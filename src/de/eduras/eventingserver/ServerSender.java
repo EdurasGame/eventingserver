@@ -9,7 +9,6 @@ import java.net.SocketAddress;
 import java.net.SocketException;
 
 import Exceptions.BufferIsEmptyException;
-
 import de.eduras.eventingserver.Event.PacketType;
 
 /**
@@ -18,7 +17,7 @@ import de.eduras.eventingserver.Event.PacketType;
  * @author illonis
  * 
  */
-public class ServerSender extends Thread {
+class ServerSender extends Thread {
 
 	/**
 	 * Message send interval

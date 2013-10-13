@@ -13,7 +13,7 @@ import java.net.SocketAddress;
  * @author Florian Mai <florian.ren.mai@googlemail.com>
  * 
  */
-public class ServerClient {
+class ServerClient {
 
 	private final int clientId;
 	private final Socket socket;

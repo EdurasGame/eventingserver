@@ -2,7 +2,7 @@ package de.eduras.eventingserver;
 
 import java.util.LinkedList;
 
-public class NetworkMessageSerializer {
+class NetworkMessageSerializer {
 	public static String serializeEvent(Event event) {
 		return null;
 	}

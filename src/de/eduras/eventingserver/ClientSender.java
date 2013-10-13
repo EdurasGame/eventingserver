@@ -8,7 +8,6 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 
 import Exceptions.ConnectionLostException;
-
 import de.eduras.eventingserver.Event.PacketType;
 
 /**
@@ -17,7 +16,7 @@ import de.eduras.eventingserver.Event.PacketType;
  * @author Florian Mai <florian.ren.mai@googlemail.com>
  * 
  */
-public class ClientSender {
+class ClientSender {
 
 	private Socket socket = null;
 	private boolean active;

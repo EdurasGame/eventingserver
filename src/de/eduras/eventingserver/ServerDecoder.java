@@ -10,7 +10,7 @@ import java.util.LinkedList;
  * @author illonis
  * 
  */
-public class ServerDecoder extends Thread {
+class ServerDecoder extends Thread {
 
 	private final Buffer inputBuffer;
 	private final Server server;

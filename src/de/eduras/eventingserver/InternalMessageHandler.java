@@ -1,6 +1,6 @@
 package de.eduras.eventingserver;
 
-public class InternalMessageHandler {
+class InternalMessageHandler {
 
 	public static String CONNECTION_ESTABLISHED = "CONNECTION_ESTABLISHED";
 	public static String UDP_HI = "UDP_HI";
