@@ -4,9 +4,8 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
-import Exceptions.ConnectionLostException;
-
 import de.eduras.eventingserver.Event.PacketType;
+import de.eduras.eventingserver.exceptions.ConnectionLostException;
 
 /**
  * A client that connects to the game server and starts receiving and sending
@@ -15,7 +14,7 @@ import de.eduras.eventingserver.Event.PacketType;
  * @author Florian Mai <florian.ren.mai@googlemail.com>
  * 
  */
-public class Client {
+public class Client implements ClientInterface {
 
 	/**
 	 * Connection timeout when connecting to server (in ms).
@@ -30,8 +29,15 @@ public class Client {
 	private ClientReceiver receiver;
 
 	private int clientId;
+	private NetworkPolicy networkPolicy;
 
 	EventHandler eventHandler;
+
+	public Client() {
+		clientId = -1;
+		networkPolicy = new DefaultNetworkPolicy();
+		networkEventHandler = new DefaultNetworkEventHandler();
+	}
 
 	/**
 	 * Connects to a server on the given address and port.
@@ -43,17 +49,23 @@ public class Client {
 	 * @throws IOException
 	 *             when connection establishing failed.
 	 */
-	public void connect(String hostAddress, int port) throws IOException {
+	@Override
+	public boolean connect(String hostAddress, int port) {
 		// EduLog.info("[CLIENT] Connecting to " + hostAddress.toString() +
 		// " at " + port);
 		socket = new Socket();
 		InetSocketAddress iaddr = new InetSocketAddress(hostAddress, port);
-		socket.connect(iaddr, CONNECT_TIMEOUT);
+		try {
+			socket.connect(iaddr, CONNECT_TIMEOUT);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
 		receiver = new ClientReceiver(socket, this);
 		receiver.start();
 		sender = new ClientSender(socket);
 		sender.setUdpSocket(receiver.getUdpSocket());
-
+		return true;
 		// createEchoSocket();
 	}
 
@@ -105,6 +117,10 @@ public class Client {
 		this.networkEventHandler = listener;
 	}
 
+	public void setNetworkPolicy(NetworkPolicy policy) {
+		this.networkPolicy = policy;
+	}
+
 	/**
 	 * Invokes connection lost action.
 	 */
@@ -116,18 +132,24 @@ public class Client {
 	/**
 	 * Invokes disconnect action.
 	 */
-	public void disconnect() {
-		networkEventHandler.onDisconnect();
+	@Override
+	public boolean disconnect() {
+		if (receiver == null || socket == null)
+			return false;
 
-		if (receiver != null)
-			receiver.interrupt();
-		if (socket != null)
-			try {
-				socket.close();
-			} catch (IOException e) {
-				// EduLog.passException(e);
-				e.printStackTrace();
-			}
+		if (networkEventHandler != null)
+			networkEventHandler.onDisconnect();
+
+		receiver.interrupt();
+
+		try {
+			socket.close();
+		} catch (IOException e) {
+			// EduLog.passException(e);
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -141,5 +163,23 @@ public class Client {
 
 	public void setEventHandler(EventHandler handler) {
 		this.eventHandler = handler;
+	}
+
+	@Override
+	public int getClientId() {
+		return clientId;
+	}
+
+	@Override
+	public boolean sendEvent(Event event) {
+		String eventAsString = NetworkMessageSerializer.serializeEvent(event);
+		PacketType packetType = networkPolicy.determinePacketType(event);
+		try {
+			sender.sendMessage(eventAsString, packetType);
+		} catch (ConnectionLostException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 }

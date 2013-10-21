@@ -2,22 +2,15 @@ package de.eduras.eventingserver;
 
 import java.util.LinkedList;
 
-public abstract class Event {
+import de.eduras.eventingserver.exceptions.TooFewArgumentsExceptions;
 
-	/**
-	 * 
-	 * @author Florian Mai <florian.ren.mai@googlemail.com>
-	 * 
-	 */
-	public enum EventNumber {
-
-	}
+public class Event {
 
 	public enum PacketType {
 		TCP, UDP;
 	}
 
-	private EventNumber eventNumber;
+	private int eventNumber;
 
 	/**
 	 * A list of arguments that the event contains.
@@ -30,8 +23,23 @@ public abstract class Event {
 	 * @param eventNumber
 	 *            The event number.
 	 */
-	public Event(EventNumber eventNumber) {
+	public Event(int eventNumber) {
+		arguments = new LinkedList<Object>();
 		this.eventNumber = eventNumber;
 	}
 
+	public int getEventNumber() {
+		return eventNumber;
+	}
+
+	public void putArgument(Object object) {
+		arguments.add(object);
+	}
+
+	public Object getArgument(int i) throws TooFewArgumentsExceptions {
+		if (i >= arguments.size()) {
+			throw new TooFewArgumentsExceptions(i, arguments.size());
+		}
+		return arguments.get(i);
+	}
 }

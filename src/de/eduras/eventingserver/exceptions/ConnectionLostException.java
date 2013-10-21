@@ -1,4 +1,4 @@
-package Exceptions;
+package de.eduras.eventingserver.exceptions;
 
 /**
  * Thrown if the connection to server is lost.

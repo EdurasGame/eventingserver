@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 import de.eduras.eventingserver.Event.PacketType;
+import de.eduras.eventingserver.test.NoSuchClientException;
 
 /**
  * A server that handles a game and its clients.
@@ -29,6 +30,7 @@ public class Server implements ServerInterface {
 	EventHandler eventHandler;
 	ServerSender serverSender;
 	ServerReceiver serverReceiver;
+	ServerDecoder decoder;
 	final HashMap<Integer, ServerClient> clients;
 	boolean running;
 	InternalMessageHandler internalMessageHandler;
@@ -42,11 +44,13 @@ public class Server implements ServerInterface {
 	 *            name of the server.
 	 */
 	public Server() {
+		running = false;
 		port = -1;
 		name = "Unknown";
 		serverSender = new ServerSender(this);
-		serverReceiver = new ServerReceiver();
+		serverReceiver = new ServerReceiver(this);
 		clients = new HashMap<Integer, ServerClient>();
+		decoder = new ServerDecoder(serverReceiver.inputBuffer, this);
 	}
 
 	/**
@@ -67,11 +71,18 @@ public class Server implements ServerInterface {
 		final ServerClient client = addClient(clientSocket);
 
 		// inform client about clientconnection.
-		serverSender.sendMessageToClient(client.getClientId(),
-				InternalMessageHandler.CONNECTION_ESTABLISHED, PacketType.TCP);
+		try {
+			serverSender.sendMessageToClient(client.getClientId(),
+					InternalMessageHandler.CONNECTION_ESTABLISHED,
+					PacketType.TCP);
+		} catch (NoSuchClientException e) {
+			// can not happen
+			e.printStackTrace();
+			return;
+		}
 
 		client.setConnected(true);
-
+		serverReceiver.add(client);
 	}
 
 	/**
@@ -101,6 +112,8 @@ public class Server implements ServerInterface {
 					client = serverSocket.accept();
 					handleConnection(client);
 				} catch (IOException e) {
+					e.printStackTrace();
+					return;
 				}
 			}
 			try {
@@ -145,9 +158,14 @@ public class Server implements ServerInterface {
 	 * @return the client with given id.
 	 * 
 	 * @author illonis
+	 * @throws NoSuchClientException
 	 */
-	public ServerClient getClientById(int clientId) {
-		return clients.get(clientId);
+	public ServerClient getClientById(int clientId)
+			throws NoSuchClientException {
+		ServerClient client = clients.get(clientId);
+		if (client == null)
+			throw new NoSuchClientException(clientId);
+		return client;
 	}
 
 	/**
@@ -173,6 +191,7 @@ public class Server implements ServerInterface {
 		int clientId = getFreeClientId();
 
 		ServerClient serverClient = new ServerClient(clientId, client);
+		clients.put(clientId, serverClient);
 
 		return serverClient;
 
@@ -214,8 +233,11 @@ public class Server implements ServerInterface {
 		this.name = name;
 		this.port = port;
 
+		running = true;
+
 		serverSender.start();
 		serverReceiver.start();
+		decoder.start();
 
 		try {
 			ConnectionListener cl = new ConnectionListener();

@@ -8,8 +8,9 @@ import java.net.InetAddress;
 import java.net.SocketAddress;
 import java.net.SocketException;
 
-import Exceptions.BufferIsEmptyException;
 import de.eduras.eventingserver.Event.PacketType;
+import de.eduras.eventingserver.exceptions.BufferIsEmptyException;
+import de.eduras.eventingserver.test.NoSuchClientException;
 
 /**
  * A class that sends collected messages every {@value #SEND_INTERVAL} ms.
@@ -93,10 +94,12 @@ class ServerSender extends Thread {
 	 *            the serialized message that should be sent.
 	 * @param packetType
 	 *            Tells whether the message is sent via UDP or TCP
+	 * @throws NoSuchClientException
 	 */
-	void sendMessageToClient(int clientId, String message, PacketType packetType) {
+	void sendMessageToClient(int clientId, String message, PacketType packetType)
+			throws NoSuchClientException {
 		if (packetType == PacketType.TCP) {
-			PrintWriter pw = server.clients.get(clientId).getOutputStream();
+			PrintWriter pw = server.getClientById(clientId).getOutputStream();
 			pw.println(message);
 		} else {
 			ServerClient serverClient = server.clients.get(clientId);
@@ -196,8 +199,10 @@ class ServerSender extends Thread {
 	 *            The event to send to the client.
 	 * @param clientId
 	 *            The client's identifier.
+	 * @throws NoSuchClientException
 	 */
-	public void sendEventToClient(Event event, int clientId) {
+	public void sendEventToClient(Event event, int clientId)
+			throws NoSuchClientException {
 		String eventAsString;
 		eventAsString = NetworkMessageSerializer.serializeEvent(event);
 		PacketType packetType = networkPolicy.determinePacketType(event);

@@ -44,7 +44,7 @@ class ServerDecoder extends Thread {
 	 * buffer is blocking.
 	 */
 	private void readFromInputBuffer() {
-		while (true) {
+		while (server.running) {
 			try {
 				String s = inputBuffer.getNext();
 				decodeMessage(s);

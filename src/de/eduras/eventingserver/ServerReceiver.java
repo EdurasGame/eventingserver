@@ -15,9 +15,11 @@ class ServerReceiver {
 	Server server;
 	Buffer inputBuffer;
 
-	public ServerReceiver() {
+	public ServerReceiver(Server server) {
+		this.server = server;
 		serverTCPReceivers = new HashMap<Integer, ServerTCPReceiver>();
 		serverUDPReceiver = new UDPMessageReceiver();
+		inputBuffer = new Buffer();
 	}
 
 	void start() {
@@ -44,6 +46,7 @@ class ServerReceiver {
 			try {
 				udpSocket = new DatagramSocket(server.getPort());
 			} catch (SocketException e) {
+				e.printStackTrace();
 				server.stop();
 			}
 
