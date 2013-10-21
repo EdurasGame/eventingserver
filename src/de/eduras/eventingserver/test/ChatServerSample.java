@@ -7,7 +7,7 @@ public class ChatServerSample {
 
 	public static void main(String[] args) {
 		ServerInterface server = new Server();
-		server.setEventHandler(new ChatEventHandler());
+		server.setEventHandler(new ChatEventHandlerServer(server));
 		server.setNetworkEventHandler(new ChatNetworkEventHandler());
 
 		server.start("Chatserver", 6666);

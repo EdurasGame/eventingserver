@@ -32,11 +32,13 @@ public class Client implements ClientInterface {
 	private NetworkPolicy networkPolicy;
 
 	EventHandler eventHandler;
+	private boolean connected;
 
 	public Client() {
 		clientId = -1;
 		networkPolicy = new DefaultNetworkPolicy();
 		networkEventHandler = new DefaultNetworkEventHandler();
+		connected = false;
 	}
 
 	/**
@@ -61,6 +63,7 @@ public class Client implements ClientInterface {
 			e.printStackTrace();
 			return false;
 		}
+		connected = true;
 		receiver = new ClientReceiver(socket, this);
 		receiver.start();
 		sender = new ClientSender(socket);
@@ -149,6 +152,8 @@ public class Client implements ClientInterface {
 			e.printStackTrace();
 			return false;
 		}
+
+		connected = false;
 		return true;
 	}
 
@@ -161,6 +166,7 @@ public class Client implements ClientInterface {
 		return socket.getLocalPort();
 	}
 
+	@Override
 	public void setEventHandler(EventHandler handler) {
 		this.eventHandler = handler;
 	}
@@ -181,5 +187,9 @@ public class Client implements ClientInterface {
 			return false;
 		}
 		return true;
+	}
+
+	public boolean isConnected() {
+		return connected;
 	}
 }

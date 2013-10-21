@@ -1,6 +1,5 @@
 package de.eduras.eventingserver;
 
-
 public interface ClientInterface {
 
 	/**
@@ -38,4 +37,12 @@ public interface ClientInterface {
 	 */
 	public boolean sendEvent(Event event);
 
+	/**
+	 * Set the {@link EventHandler} that is called when an event arrives at the
+	 * client.
+	 * 
+	 * @param eventHandler
+	 *            The eventhandler to be called when an event arrives.
+	 */
+	public void setEventHandler(EventHandler eventHandler);
 }

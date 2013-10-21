@@ -2,6 +2,7 @@ package de.eduras.eventingserver;
 
 import java.util.LinkedList;
 
+import de.eduras.eventingserver.test.NoSuchClientException;
 
 public interface ServerInterface {
 
@@ -40,7 +41,8 @@ public interface ServerInterface {
 	 *            The client's id.
 	 * @return Success flag.
 	 */
-	public boolean sendEventToClient(Event event, int clientId);
+	public boolean sendEventToClient(Event event, int clientId)
+			throws NoSuchClientException;
 
 	/**
 	 * Sends an {@link Event} to all registered clients.

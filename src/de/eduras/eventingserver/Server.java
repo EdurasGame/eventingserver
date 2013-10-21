@@ -261,15 +261,16 @@ public class Server implements ServerInterface {
 	}
 
 	@Override
-	public boolean sendEventToClient(Event event, int clientId) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean sendEventToClient(Event event, int clientId)
+			throws NoSuchClientException {
+		serverSender.sendEventToClient(event, clientId);
+		return true;
 	}
 
 	@Override
 	public boolean sendEventToAll(Event event) {
-		// TODO Auto-generated method stub
-		return false;
+		serverSender.sendEventToAll(event);
+		return true;
 	}
 
 	@Override

@@ -43,7 +43,7 @@ class ClientParser extends Thread {
 	 * buffer is blocking.
 	 */
 	private void readFromInputBuffer() {
-		while (true) {
+		while (client.isConnected()) {
 			try {
 				String s = inputBuffer.getNext();
 				decodeMessage(s);

@@ -2,15 +2,20 @@ package de.eduras.eventingserver.test;
 
 import de.eduras.eventingserver.Event;
 import de.eduras.eventingserver.EventHandler;
+import de.eduras.eventingserver.ServerInterface;
 import de.eduras.eventingserver.exceptions.TooFewArgumentsExceptions;
 
-public class ChatEventHandler implements EventHandler {
+public class ChatEventHandlerServer implements EventHandler {
 
 	public static final int MESSAGE_SENT_EVENT = 10;
+	ServerInterface server;
+
+	public ChatEventHandlerServer(ServerInterface server) {
+		this.server = server;
+	}
 
 	@Override
 	public void handleEvent(Event event) {
-
 		switch (event.getEventNumber()) {
 		case MESSAGE_SENT_EVENT:
 			try {
@@ -20,8 +25,9 @@ public class ChatEventHandler implements EventHandler {
 			} catch (TooFewArgumentsExceptions e) {
 				e.printStackTrace();
 			}
+			server.sendEventToAll(event);
 			break;
-		}
 
+		}
 	}
 }

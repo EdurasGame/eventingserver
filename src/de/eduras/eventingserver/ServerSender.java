@@ -48,6 +48,7 @@ class ServerSender extends Thread {
 		}
 		this.setName("ServerSender");
 
+		networkPolicy = new DefaultNetworkPolicy();
 		this.server = server;
 	}
 
