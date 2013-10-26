@@ -80,13 +80,13 @@ public interface ServerInterface {
 	public boolean setEventHandler(EventHandler eventHandler);
 
 	/**
-	 * Sets the {@link NetworkEventHandler} whose callbacks are called when
-	 * something on the network happens.
+	 * Sets the {@link ServerNetworkEventHandler} whose callbacks are called
+	 * when something on the network happens.
 	 * 
 	 * @param handler
 	 *            The handler.
 	 * @return Success flag.
 	 */
-	public boolean setNetworkEventHandler(NetworkEventHandler handler);
+	public boolean setNetworkEventHandler(ServerNetworkEventHandler handler);
 
 }

@@ -1,9 +1,27 @@
 package de.eduras.eventingserver;
 
+/**
+ * Implement this interface to react on network events.
+ * 
+ * @author Florian Mai <florian.ren.mai@googlemail.com>
+ * 
+ */
 public interface NetworkEventHandler {
 
-	public void onConnectionLost();
+	/**
+	 * A client disconnected.
+	 * 
+	 * @param clientId
+	 *            The client's id.
+	 */
+	public void onClientDisconnected(int clientId);
 
-	public void onDisconnect();
+	/**
+	 * A client connected.
+	 * 
+	 * @param clientId
+	 *            The client's id.
+	 */
+	public void onClientConnected(int clientId);
 
 }

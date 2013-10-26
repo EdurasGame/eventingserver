@@ -34,6 +34,7 @@ public class Server implements ServerInterface {
 	final HashMap<Integer, ServerClient> clients;
 	boolean running;
 	InternalMessageHandler internalMessageHandler;
+	ServerNetworkEventHandler networkEventHandler;
 
 	/**
 	 * Creates a new server.
@@ -51,6 +52,7 @@ public class Server implements ServerInterface {
 		serverReceiver = new ServerReceiver(this);
 		clients = new HashMap<Integer, ServerClient>();
 		decoder = new ServerDecoder(serverReceiver.inputBuffer, this);
+		networkEventHandler = new DefaultServerNetworkEventHandler();
 	}
 
 	/**
@@ -129,9 +131,9 @@ public class Server implements ServerInterface {
 	 * @param client
 	 *            Client to remove.
 	 */
-	public void kickClient(ServerClient client) {
+	void kickClient(ServerClient client) {
 		removeClient(client);
-		client.isConnected();
+		client.setConnected(false);
 	}
 
 	/**
@@ -160,8 +162,7 @@ public class Server implements ServerInterface {
 	 * @author illonis
 	 * @throws NoSuchClientException
 	 */
-	public ServerClient getClientById(int clientId)
-			throws NoSuchClientException {
+	ServerClient getClientById(int clientId) throws NoSuchClientException {
 		ServerClient client = clients.get(clientId);
 		if (client == null)
 			throw new NoSuchClientException(clientId);
@@ -281,8 +282,15 @@ public class Server implements ServerInterface {
 
 	@Override
 	public boolean kickClient(int clientId) {
-		// TODO Auto-generated method stub
-		return false;
+		ServerClient client;
+		try {
+			client = getClientById(clientId);
+		} catch (NoSuchClientException e) {
+			e.printStackTrace();
+			return false;
+		}
+		kickClient(client);
+		return true;
 	}
 
 	@Override
@@ -292,8 +300,8 @@ public class Server implements ServerInterface {
 	}
 
 	@Override
-	public boolean setNetworkEventHandler(NetworkEventHandler handler) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean setNetworkEventHandler(ServerNetworkEventHandler handler) {
+		this.networkEventHandler = handler;
+		return true;
 	}
 }

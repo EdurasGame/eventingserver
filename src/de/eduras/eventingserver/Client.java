@@ -23,7 +23,7 @@ public class Client implements ClientInterface {
 
 	private Socket socket;
 
-	NetworkEventHandler networkEventHandler;
+	ClientNetworkEventHandler networkEventHandler;
 
 	private ClientSender sender;
 	private ClientReceiver receiver;
@@ -37,7 +37,7 @@ public class Client implements ClientInterface {
 	public Client() {
 		clientId = -1;
 		networkPolicy = new DefaultNetworkPolicy();
-		networkEventHandler = new DefaultNetworkEventHandler();
+		networkEventHandler = new DefaultClientNetworkEventHandler();
 		connected = false;
 	}
 
@@ -108,18 +108,6 @@ public class Client implements ClientInterface {
 		return clientId;
 	}
 
-	/**
-	 * Sets the network event listener. This replaces any old listener.
-	 * 
-	 * @param listener
-	 *            the new listener.
-	 * 
-	 * @author illonis
-	 */
-	public void setNetworkEventListener(NetworkEventHandler listener) {
-		this.networkEventHandler = listener;
-	}
-
 	public void setNetworkPolicy(NetworkPolicy policy) {
 		this.networkPolicy = policy;
 	}
@@ -141,7 +129,7 @@ public class Client implements ClientInterface {
 			return false;
 
 		if (networkEventHandler != null)
-			networkEventHandler.onDisconnect();
+			networkEventHandler.onDisconnected();
 
 		receiver.interrupt();
 
@@ -191,5 +179,11 @@ public class Client implements ClientInterface {
 
 	public boolean isConnected() {
 		return connected;
+	}
+
+	@Override
+	public void setNetworkEventHandler(
+			ClientNetworkEventHandler networkEventHandler) {
+		this.networkEventHandler = networkEventHandler;
 	}
 }

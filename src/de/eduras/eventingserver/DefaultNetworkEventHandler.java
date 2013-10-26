@@ -10,13 +10,13 @@ package de.eduras.eventingserver;
 class DefaultNetworkEventHandler implements NetworkEventHandler {
 
 	@Override
-	public void onConnectionLost() {
-		System.out.println("The connection was lost.");
+	public void onClientDisconnected(int clientId) {
+		System.out.println("Client #" + clientId + " disconnected.");
 	}
 
 	@Override
-	public void onDisconnect() {
-		System.out.println("Client disconnected.");
+	public void onClientConnected(int clientId) {
+		System.out.println("Client #" + clientId + " connected.");
 	}
 
 }

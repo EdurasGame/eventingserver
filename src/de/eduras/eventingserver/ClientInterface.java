@@ -45,4 +45,23 @@ public interface ClientInterface {
 	 *            The eventhandler to be called when an event arrives.
 	 */
 	public void setEventHandler(EventHandler eventHandler);
+
+	/**
+	 * Sets the network event listener. This replaces any old listener.
+	 * 
+	 * @param listener
+	 *            the new listener.
+	 * 
+	 * @author illonis
+	 */
+	public void setNetworkEventHandler(
+			ClientNetworkEventHandler networkEventHandler);
+
+	/**
+	 * Returns true, if the client is currently connected to a server and false
+	 * otherwise.
+	 * 
+	 * @return connected-flag
+	 */
+	public boolean isConnected();
 }
