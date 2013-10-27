@@ -72,10 +72,10 @@ public class Server implements ServerInterface {
 	private void handleConnection(Socket clientSocket) throws IOException {
 		final ServerClient client = addClient(clientSocket);
 
-		// inform client about clientconnection.
+		// inform client of successful connection.
 		try {
 			serverSender.sendMessageToClient(client.getClientId(),
-					InternalMessageHandler.CONNECTION_ESTABLISHED,
+					InternalMessageHandler.createConnectionEstablishMessage(),
 					PacketType.TCP);
 		} catch (NoSuchClientException e) {
 			// can not happen
@@ -83,8 +83,16 @@ public class Server implements ServerInterface {
 			return;
 		}
 
+		// inform other clients of client's connection.
+		serverSender.sendMessageToAll(InternalMessageHandler
+				.createClientConnectedMessage(client.getClientId()),
+				Event.PacketType.TCP);
+
 		client.setConnected(true);
 		serverReceiver.add(client);
+
+		// call networkhandler
+		networkEventHandler.onClientConnected(client.getClientId());
 	}
 
 	/**
@@ -132,24 +140,38 @@ public class Server implements ServerInterface {
 	 *            Client to remove.
 	 */
 	void kickClient(ServerClient client) {
-		removeClient(client);
-		client.setConnected(false);
+		handleClientDisconnect(client);
+
+		// inform clients
+		serverSender.sendMessageToAll(InternalMessageHandler
+				.createClientKickedMessage(client.getClientId()),
+				Event.PacketType.TCP);
 	}
 
 	/**
-	 * Removes a player from the logic if the correlating client disconnected.
+	 * Removes a client
 	 * 
 	 * @param client
 	 *            The client.
 	 */
-	public void handleClientDisconnect(ServerClient client) {
+	void handleClientDisconnect(ServerClient client) {
 
-		kickClient(client);
-
+		// interrupt client's activities correctly
+		removeClient(client);
+		client.setConnected(false);
 		try {
 			client.closeConnection();
 		} catch (IOException e) {
+			e.printStackTrace();
 		}
+
+		// inform clients
+		serverSender.sendMessageToAll(InternalMessageHandler
+				.createClientDisconnectedMessage(client.getClientId()),
+				Event.PacketType.TCP);
+
+		// inform callback
+		networkEventHandler.onClientDisconnected(client.getClientId());
 	}
 
 	/**
@@ -195,7 +217,6 @@ public class Server implements ServerInterface {
 		clients.put(clientId, serverClient);
 
 		return serverClient;
-
 	}
 
 	/**
@@ -257,8 +278,7 @@ public class Server implements ServerInterface {
 
 	@Override
 	public void setPolicy(NetworkPolicy policy) {
-		// TODO Auto-generated method stub
-
+		serverSender.networkPolicy = policy;
 	}
 
 	@Override

@@ -121,6 +121,17 @@ class ServerSender extends Thread {
 
 	}
 
+	void sendMessageToAll(String message, PacketType packetType) {
+		for (ServerClient client : server.clients.values()) {
+			try {
+				sendMessageToClient(client.getClientId(), message, packetType);
+			} catch (NoSuchClientException e) {
+				e.printStackTrace();
+				continue;
+			}
+		}
+	}
+
 	@Override
 	public void run() {
 		while (server.running) {

@@ -27,4 +27,10 @@ public class ChatNetworkEventHandlerClient implements ClientNetworkEventHandler 
 
 	}
 
+	@Override
+	public void onClientKicked(int clientId) {
+		// TODO Auto-generated method stub
+
+	}
+
 }

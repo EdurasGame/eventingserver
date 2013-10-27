@@ -12,4 +12,10 @@ public class DefaultClientNetworkEventHandler extends
 	public void onDisconnected() {
 		System.out.println("The client disconnected.");
 	}
+
+	@Override
+	public void onClientKicked(int clientId) {
+		System.out.println("Client #" + clientId
+				+ " was kicked from the server.");
+	}
 }

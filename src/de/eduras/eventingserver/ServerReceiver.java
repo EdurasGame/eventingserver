@@ -5,8 +5,9 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.HashMap;
+import java.util.LinkedList;
 
-import de.eduras.eventingserver.Event.PacketType;
+import de.eduras.eventingserver.utils.Pair;
 
 class ServerReceiver {
 
@@ -57,24 +58,17 @@ class ServerReceiver {
 					udpSocket.receive(packet);
 					String messages = new String(packet.getData(), 0,
 							packet.getLength());
-					if (!InternalMessageHandler.isInternalMessage(messages)) {
-						inputBuffer.append(messages);
-					} else {
-						int clientId = server.internalMessageHandler
-								.extractClientId(messages);
-						ServerClient client = server.getClientById(clientId);
-						if (client == null || client.isUdpSetUp()) {
-							throw new Exception(
-									"The message has an invalid format.");
-						}
 
-						server.serverSender.sendMessageToClient(clientId,
-								InternalMessageHandler.UDP_READY,
-								PacketType.TCP);
+					Pair<LinkedList<String>, String> internalAndRest = InternalMessageHandler
+							.extractInternalMessage(messages);
 
-						client.setUdpAddress(packet.getSocketAddress());
-						client.setUdpSetUp(true);
-					}
+					// handle internal
+					InternalMessageHandler.handleInternalMessagesServer(server,
+							internalAndRest.getFirst(),
+							packet.getSocketAddress());
+
+					inputBuffer.append(internalAndRest.getSecond());
+
 				} catch (IOException e) {
 					server.stop();
 				} catch (NumberFormatException e) {

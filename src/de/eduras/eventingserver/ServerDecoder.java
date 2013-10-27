@@ -2,6 +2,8 @@ package de.eduras.eventingserver;
 
 import java.util.LinkedList;
 
+import de.eduras.eventingserver.utils.Pair;
+
 /**
  * {@link ServerDecoder} is used to handle received messages from clients that
  * wait in a input buffer and translate them into GameEvents to hand them on to
@@ -62,18 +64,21 @@ class ServerDecoder extends Thread {
 	 *            message to decode.
 	 */
 	private void decodeMessage(String message) {
-		LinkedList<Event> deserializedMessages = NetworkMessageSerializer
-				.deserializeEvent(message);
 		// EduLog.info("[ServerDecoder] Decoded " + deserializedMessages.size()
 		// + " messages from: " + message);
 
-		if (InternalMessageHandler.isInternalMessage(message)) {
-			// TODO: do something
-		} else {
+		// check for internal messages
+		Pair<LinkedList<String>, String> internalAndRest = InternalMessageHandler
+				.extractInternalMessage(message);
+		InternalMessageHandler.handleInternalMessagesServer(server,
+				internalAndRest.getFirst(), null);
 
-			for (Event event : deserializedMessages) {
-				server.eventHandler.handleEvent(event);
-			}
+		// handle events
+		LinkedList<Event> deserializedMessages = NetworkMessageSerializer
+				.deserializeEvent(internalAndRest.getSecond());
+		for (Event event : deserializedMessages) {
+			server.eventHandler.handleEvent(event);
 		}
+
 	}
 }

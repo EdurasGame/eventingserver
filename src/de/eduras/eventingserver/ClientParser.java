@@ -2,6 +2,8 @@ package de.eduras.eventingserver;
 
 import java.util.LinkedList;
 
+import de.eduras.eventingserver.utils.Pair;
+
 /**
  * Processes messages that arrive at the client.
  * 
@@ -50,6 +52,7 @@ class ClientParser extends Thread {
 			} catch (InterruptedException e) {
 				// EduLog.info("ClientParser interrupted.");
 				e.printStackTrace();
+				client.connectionLost();
 				break;
 			}
 		}
@@ -65,17 +68,16 @@ class ClientParser extends Thread {
 		if (message.isEmpty())
 			return;
 
-		if (InternalMessageHandler.isInternalMessage(message)) {
-			// do something
-		} else {
-			LinkedList<Event> deserializedMessages = NetworkMessageSerializer
-					.deserializeEvent(message);
-			// EduLog.info("[ServerDecoder] Decoded " +
-			// deserializedMessages.size()
-			// + " messages from: " + message);
-			for (Event event : deserializedMessages) {
-				client.eventHandler.handleEvent(event);
-			}
+		Pair<LinkedList<String>, String> internalAndEvents = InternalMessageHandler
+				.extractInternalMessage(message);
+		InternalMessageHandler.handleInternalMessagesClient(client,
+				internalAndEvents.getFirst(), null);
+
+		LinkedList<Event> deserializedMessages = NetworkMessageSerializer
+				.deserializeEvent(internalAndEvents.getSecond());
+		for (Event event : deserializedMessages) {
+			client.eventHandler.handleEvent(event);
 		}
+
 	}
 }

@@ -8,6 +8,8 @@ import java.net.DatagramSocket;
 import java.net.Socket;
 import java.net.SocketException;
 
+import de.eduras.eventingserver.exceptions.ConnectionLostException;
+
 /**
  * Receives incoming messages for the client.
  * 
@@ -33,8 +35,10 @@ class ClientReceiver extends Thread {
 	 *            The socket receiving on.
 	 * @param client
 	 *            The associated client.
+	 * @throws ConnectionLostException
 	 */
-	public ClientReceiver(Socket socket, Client client) {
+	public ClientReceiver(Socket socket, Client client)
+			throws ConnectionLostException {
 
 		this.client = client;
 		inputBuffer = new Buffer();
@@ -56,7 +60,7 @@ class ClientReceiver extends Thread {
 			// EduLog.passException(e);
 			e.printStackTrace();
 			interrupt();
-			return;
+			throw new ConnectionLostException();
 		}
 
 	}
@@ -91,6 +95,7 @@ class ClientReceiver extends Thread {
 				// EduLog.errorL("Client.networking.tcpclose");
 				// EduLog.passException(e);
 				e.printStackTrace();
+				client.connectionLost();
 				interrupt();
 				return;
 			}
@@ -129,7 +134,9 @@ class ClientReceiver extends Thread {
 					connectionAvailable = false;
 					// EduLog.errorL("Client.networking.udpclose");
 					// EduLog.passException(e);
+					client.connectionLost();
 					interrupt();
+					return;
 				}
 			}
 			udpSocket.close();

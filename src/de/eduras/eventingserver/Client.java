@@ -25,8 +25,8 @@ public class Client implements ClientInterface {
 
 	ClientNetworkEventHandler networkEventHandler;
 
-	private ClientSender sender;
-	private ClientReceiver receiver;
+	ClientSender sender;
+	ClientReceiver receiver;
 
 	private int clientId;
 	private NetworkPolicy networkPolicy;
@@ -64,7 +64,12 @@ public class Client implements ClientInterface {
 			return false;
 		}
 		connected = true;
-		receiver = new ClientReceiver(socket, this);
+		try {
+			receiver = new ClientReceiver(socket, this);
+		} catch (ConnectionLostException e) {
+			e.printStackTrace();
+			networkEventHandler.onConnectionLost();
+		}
 		receiver.start();
 		sender = new ClientSender(socket);
 		sender.setUdpSocket(receiver.getUdpSocket());
@@ -115,7 +120,7 @@ public class Client implements ClientInterface {
 	/**
 	 * Invokes connection lost action.
 	 */
-	public void connectionLost() {
+	void connectionLost() {
 		networkEventHandler.onConnectionLost();
 		receiver.interrupt();
 	}
@@ -150,7 +155,7 @@ public class Client implements ClientInterface {
 	 * 
 	 * @return The number of the local port.
 	 */
-	public int getPortNumber() {
+	int getPortNumber() {
 		return socket.getLocalPort();
 	}
 
@@ -171,12 +176,13 @@ public class Client implements ClientInterface {
 		try {
 			sender.sendMessage(eventAsString, packetType);
 		} catch (ConnectionLostException e) {
-			e.printStackTrace();
+			connectionLost();
 			return false;
 		}
 		return true;
 	}
 
+	@Override
 	public boolean isConnected() {
 		return connected;
 	}
