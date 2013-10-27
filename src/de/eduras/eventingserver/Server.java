@@ -157,6 +157,10 @@ public class Server implements ServerInterface {
 	 */
 	void handleClientDisconnect(ServerClient client) {
 
+		if (!client.isConnected()) {
+			return;
+		}
+
 		// interrupt client's activities correctly
 		removeClient(client);
 		client.setConnected(false);
@@ -297,8 +301,7 @@ public class Server implements ServerInterface {
 
 	@Override
 	public LinkedList<Integer> getClients() {
-		// TODO Auto-generated method stub
-		return null;
+		return new LinkedList<Integer>(clients.keySet());
 	}
 
 	@Override
