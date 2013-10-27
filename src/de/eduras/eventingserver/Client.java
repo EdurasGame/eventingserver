@@ -170,7 +170,7 @@ public class Client implements ClientInterface {
 	}
 
 	@Override
-	public boolean sendEvent(Event event) {
+	public boolean sendEvent(Event event) throws IllegalArgumentException {
 		String eventAsString = NetworkMessageSerializer.serializeEvent(event);
 		PacketType packetType = networkPolicy.determinePacketType(event);
 		try {

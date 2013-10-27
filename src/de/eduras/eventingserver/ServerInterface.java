@@ -40,9 +40,11 @@ public interface ServerInterface {
 	 * @param clientId
 	 *            The client's id.
 	 * @return Success flag.
+	 * @throws Thrown
+	 *             if the argument contains an illegal argument.
 	 */
 	public boolean sendEventToClient(Event event, int clientId)
-			throws NoSuchClientException;
+			throws NoSuchClientException, IllegalArgumentException;
 
 	/**
 	 * Sends an {@link Event} to all registered clients.
@@ -50,8 +52,10 @@ public interface ServerInterface {
 	 * @param event
 	 *            The event to send.
 	 * @return
+	 * @throws IllegalArgumentException
+	 *             Thrown if the event contains an illegal argument.
 	 */
-	public boolean sendEventToAll(Event event);
+	public boolean sendEventToAll(Event event) throws IllegalArgumentException;
 
 	/**
 	 * Returns a {@link LinkedList} of ids of all clients currently connected to

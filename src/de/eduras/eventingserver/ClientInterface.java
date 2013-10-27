@@ -34,8 +34,10 @@ public interface ClientInterface {
 	 * @param event
 	 *            The event to send.
 	 * @return Success flag.
+	 * @throws IllegalArgumentException
+	 *             thrown when an argument in the event is illegal.
 	 */
-	public boolean sendEvent(Event event);
+	public boolean sendEvent(Event event) throws IllegalArgumentException;
 
 	/**
 	 * Set the {@link EventHandler} that is called when an event arrives at the

@@ -7,7 +7,8 @@ import de.eduras.eventingserver.exceptions.InvalidMessageFormatException;
 import de.eduras.eventingserver.exceptions.MessageNotSupportedException;
 
 class NetworkMessageSerializer {
-	public static String serializeEvent(Event event) {
+	public static String serializeEvent(Event event)
+			throws IllegalArgumentException {
 		String eventString = "##";
 		eventString += event.getEventNumber();
 
@@ -31,6 +32,11 @@ class NetworkMessageSerializer {
 			}
 
 			if (argument instanceof String) {
+				if (((String) argument).contains("#")
+						|| ((String) argument).contains("&")) {
+					throw new IllegalArgumentException("String argument "
+							+ (String) argument + " contains # or &!");
+				}
 				type += "S";
 			}
 

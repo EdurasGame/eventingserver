@@ -192,8 +192,10 @@ class ServerSender extends Thread {
 	 * 
 	 * @param event
 	 *            The event
+	 * @throws IllegalArgumentException
+	 *             Thrown if an argument in the event is illegal.
 	 */
-	public void sendEventToAll(Event event) {
+	public void sendEventToAll(Event event) throws IllegalArgumentException {
 		String eventAsString;
 		eventAsString = NetworkMessageSerializer.serializeEvent(event);
 
@@ -212,9 +214,11 @@ class ServerSender extends Thread {
 	 * @param clientId
 	 *            The client's identifier.
 	 * @throws NoSuchClientException
+	 * @throws IllegalArgumentException
+	 *             Thrown when an argument in the given event is illegal.
 	 */
 	public void sendEventToClient(Event event, int clientId)
-			throws NoSuchClientException {
+			throws NoSuchClientException, IllegalArgumentException {
 		String eventAsString;
 		eventAsString = NetworkMessageSerializer.serializeEvent(event);
 		PacketType packetType = networkPolicy.determinePacketType(event);
