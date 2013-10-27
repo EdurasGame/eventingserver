@@ -75,8 +75,9 @@ public class Server implements ServerInterface {
 		// inform client of successful connection.
 		try {
 			serverSender.sendMessageToClient(client.getClientId(),
-					InternalMessageHandler.createConnectionEstablishMessage(),
-					PacketType.TCP);
+					InternalMessageHandler
+							.createConnectionEstablishMessage(client
+									.getClientId()), PacketType.TCP);
 		} catch (NoSuchClientException e) {
 			// can not happen
 			e.printStackTrace();

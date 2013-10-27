@@ -65,16 +65,16 @@ class NetworkMessageSerializer {
 
 			// EduLog.info("message: " + msg);
 
-			Event ge;
+			Event event;
 			try {
-				ge = deserializeMessage(msg);
+				event = deserializeMessage(msg);
 			} catch (InvalidMessageFormatException
 					| GivenParametersDoNotFitToEventException
 					| MessageNotSupportedException e) {
 				e.printStackTrace();
 				continue;
 			}
-			events.add(ge);
+			events.add(event);
 
 		}
 

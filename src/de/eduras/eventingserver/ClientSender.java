@@ -22,6 +22,7 @@ class ClientSender {
 	private boolean active;
 	private PrintWriter messageWriter = null;
 	private DatagramSocket udpSocket;
+	private Client client;
 
 	boolean isUDPSetUp = false;
 
@@ -31,7 +32,7 @@ class ClientSender {
 	 * @param socket
 	 *            The socket to send messages via.
 	 */
-	public ClientSender(Socket socket) {
+	public ClientSender(Socket socket, Client client) {
 
 		this.socket = socket;
 		active = true;
@@ -43,6 +44,8 @@ class ClientSender {
 			// EduLog.passException(e);
 			e.printStackTrace();
 		}
+
+		this.client = client;
 	}
 
 	/**
@@ -106,29 +109,6 @@ class ClientSender {
 	 */
 	void setUdpSocket(DatagramSocket udpSocket2) {
 		udpSocket = udpSocket2;
-		new UDPInitializer().start();
-	}
-
-	class UDPInitializer extends Thread {
-		@Override
-		public void run() {
-			while (!isUDPSetUp) {
-				try {
-					sendMessage(InternalMessageHandler.createUDPHIMessage(),
-							Event.PacketType.UDP);
-				} catch (ConnectionLostException e) {
-					// TODO: damn, need to stop the client some day.
-					e.printStackTrace();
-					return;
-				}
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-					return;
-				}
-			}
-		}
 	}
 
 }

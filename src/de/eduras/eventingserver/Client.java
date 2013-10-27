@@ -32,7 +32,7 @@ public class Client implements ClientInterface {
 	private NetworkPolicy networkPolicy;
 
 	EventHandler eventHandler;
-	private boolean connected;
+	boolean connected;
 
 	public Client() {
 		clientId = -1;
@@ -71,7 +71,7 @@ public class Client implements ClientInterface {
 			networkEventHandler.onConnectionLost();
 		}
 		receiver.start();
-		sender = new ClientSender(socket);
+		sender = new ClientSender(socket, this);
 		sender.setUdpSocket(receiver.getUdpSocket());
 		return true;
 		// createEchoSocket();

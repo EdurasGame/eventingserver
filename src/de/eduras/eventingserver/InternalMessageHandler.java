@@ -4,6 +4,7 @@ import java.net.SocketAddress;
 import java.util.LinkedList;
 
 import de.eduras.eventingserver.Event.PacketType;
+import de.eduras.eventingserver.exceptions.ConnectionLostException;
 import de.eduras.eventingserver.utils.Pair;
 
 class InternalMessageHandler {
@@ -20,9 +21,9 @@ class InternalMessageHandler {
 		String rest = messages;
 		LinkedList<String> internalMessages = new LinkedList<String>();
 
-		while (rest.contains("*")) {
+		while (rest.contains("&")) {
 			// extract internal messages
-			String[] parts = rest.split("*", 3);
+			String[] parts = rest.split("&", 3);
 			// we know that there are always 2*i "*"s , if any. so parts[1] must
 			// contain the internal message and we just concat the rest
 			internalMessages.add(parts[1]);
@@ -33,11 +34,11 @@ class InternalMessageHandler {
 	}
 
 	static String makeAnInternalMessage(String message) {
-		return "*" + message + "*";
+		return "&" + message + "&";
 	}
 
-	static String createConnectionEstablishMessage() {
-		return makeAnInternalMessage(CONNECTION_ESTABLISHED);
+	static String createConnectionEstablishMessage(int clientId) {
+		return makeAnInternalMessage(CONNECTION_ESTABLISHED + "#" + clientId);
 	}
 
 	static String createClientConnectedMessage(int clientId) {
@@ -49,11 +50,15 @@ class InternalMessageHandler {
 	}
 
 	static String createClientDisconnectedMessage(int clientId) {
-		return makeAnInternalMessage(CLIENT_DISCONNECTED + clientId);
+		return makeAnInternalMessage(CLIENT_DISCONNECTED + "#" + clientId);
 	}
 
-	static String createUDPHIMessage() {
-		return makeAnInternalMessage(UDP_HI);
+	static String createUDPHIMessage(int clientId) {
+		return makeAnInternalMessage(UDP_HI + "#" + clientId);
+	}
+
+	static String createUDPREADYMessage() {
+		return makeAnInternalMessage(UDP_READY);
 	}
 
 	// TODO: this is solved very very badly. think about it some day. the
@@ -71,23 +76,24 @@ class InternalMessageHandler {
 
 					ServerClient client = server.getClientById(clientId);
 					if (client == null || client.isUdpSetUp()) {
-						return;
+						continue;
 					}
 
 					server.serverSender.sendMessageToClient(clientId,
-							InternalMessageHandler.UDP_READY, PacketType.TCP);
+							InternalMessageHandler.createUDPREADYMessage(),
+							PacketType.TCP);
 
 					client.setUdpAddress((SocketAddress) someArgument);
 					client.setUdpSetUp(true);
 				} catch (Exception e) {
 					e.printStackTrace();
-					return;
+					continue;
 				}
 			}
 		}
 	}
 
-	static void handleInternalMessagesClient(Client client,
+	static void handleInternalMessagesClient(final Client client,
 			LinkedList<String> messages, Object someArgument) {
 		for (String internalMessage : messages) {
 
@@ -103,10 +109,10 @@ class InternalMessageHandler {
 											internalMessage, 0)));
 				} catch (NumberFormatException e) {
 					e.printStackTrace();
-					return;
+					continue;
 				} catch (Exception e) {
 					e.printStackTrace();
-					return;
+					continue;
 				}
 			}
 
@@ -118,10 +124,10 @@ class InternalMessageHandler {
 											internalMessage, 0)));
 				} catch (NumberFormatException e) {
 					e.printStackTrace();
-					return;
+					continue;
 				} catch (Exception e) {
 					e.printStackTrace();
-					return;
+					continue;
 				}
 			}
 
@@ -133,11 +139,50 @@ class InternalMessageHandler {
 											internalMessage, 0)));
 				} catch (NumberFormatException e) {
 					e.printStackTrace();
-					return;
+					continue;
 				} catch (Exception e) {
 					e.printStackTrace();
-					return;
+					continue;
 				}
+			}
+
+			if (internalMessage.contains(CONNECTION_ESTABLISHED)) {
+				client.connected = true;
+				try {
+					client.setOwnerId(Integer.parseInt(NetworkMessageSerializer
+							.internalMessageGetArgument(internalMessage, 0)));
+				} catch (NumberFormatException e) {
+					e.printStackTrace();
+					continue;
+				} catch (Exception e) {
+					e.printStackTrace();
+					continue;
+				}
+				class UDPInitializer extends Thread {
+					@Override
+					public void run() {
+						while (!client.sender.isUDPSetUp) {
+							try {
+								client.sender.sendMessage(
+										InternalMessageHandler
+												.createUDPHIMessage(client
+														.getClientId()),
+										Event.PacketType.UDP);
+							} catch (ConnectionLostException e) {
+								client.connectionLost();
+								return;
+							}
+							try {
+								Thread.sleep(1000);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+								return;
+							}
+						}
+					}
+				}
+
+				new UDPInitializer().start();
 			}
 		}
 	}
