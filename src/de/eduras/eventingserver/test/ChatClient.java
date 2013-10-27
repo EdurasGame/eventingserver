@@ -46,5 +46,7 @@ public class ChatClient {
 				client.sendEvent(messageEvent);
 			}
 		}
+
+		client.disconnect();
 	}
 }
