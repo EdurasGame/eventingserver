@@ -31,6 +31,10 @@ class NetworkMessageSerializer {
 				type += "I";
 			}
 
+			if (argument instanceof Long) {
+				type += "L";
+			}
+
 			if (argument instanceof String) {
 				if (((String) argument).contains("#")
 						|| ((String) argument).contains("&")) {
@@ -152,11 +156,16 @@ class NetworkMessageSerializer {
 			case 'D':
 				argumentAsObject = Double.parseDouble(objectStr);
 				break;
+			case 'L':
+				argumentAsObject = Long.parseLong(objectStr);
+				break;
 			default: // TODO: Call user specific handler if it's not a
 						// simple
 						// datatype.
 				break;
 			}
+			// TODO: if argument still null, throw an exception.
+
 			event.putArgument(argumentAsObject);
 		}
 		return event;
