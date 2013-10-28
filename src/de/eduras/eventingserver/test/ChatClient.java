@@ -12,6 +12,7 @@ public class ChatClient {
 	public static void main(String[] args) {
 		ClientInterface client = new Client();
 		client.setEventHandler(new ChatEventHandlerClient(client));
+		client.setNetworkPolicy(new ChatPolicy());
 		client.connect("localhost", 6666);
 
 		BufferedReader userInputReader = new BufferedReader(
@@ -36,8 +37,16 @@ public class ChatClient {
 				e.printStackTrace();
 				continue;
 			}
-			if (userInput.equals("/quit")) {
-				running = false;
+			if (userInput.startsWith("/")) {
+				if (userInput.equals("/quit")) {
+					running = false;
+				}
+				if (userInput.equals("/ping")) {
+					Event event = new Event(ChatEventHandlerServer.DELAY_PLS);
+					event.putArgument(client.getClientId());
+					event.putArgument(System.currentTimeMillis());
+					client.sendEvent(event);
+				}
 			} else {
 				Event messageEvent = new Event(
 						ChatEventHandlerServer.MESSAGE_SENT_EVENT);

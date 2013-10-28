@@ -30,6 +30,15 @@ public class ChatEventHandlerClient implements EventHandler {
 
 			System.out.println(clientName + ": " + message);
 			break;
+		case ChatEventHandlerServer.DELAY_PLS:
+			try {
+				long latency = (long) event.getArgument(1);
+				System.out.println("Latency: "
+						+ (System.currentTimeMillis() - latency));
+			} catch (TooFewArgumentsExceptions e) {
+				e.printStackTrace();
+			}
+
 		}
 
 	}

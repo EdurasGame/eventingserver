@@ -12,6 +12,7 @@ public class ChatServerSample {
 	public static void main(String[] args) {
 		ServerInterface server = new Server();
 		server.setEventHandler(new ChatEventHandlerServer(server));
+		server.setPolicy(new ChatPolicy());
 		server.start("Chatserver", 6666);
 
 		BufferedReader userInputReader = new BufferedReader(

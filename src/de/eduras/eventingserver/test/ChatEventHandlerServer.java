@@ -8,6 +8,7 @@ import de.eduras.eventingserver.exceptions.TooFewArgumentsExceptions;
 public class ChatEventHandlerServer implements EventHandler {
 
 	public static final int MESSAGE_SENT_EVENT = 10;
+	public static final int DELAY_PLS = 11;
 	ServerInterface server;
 
 	public ChatEventHandlerServer(ServerInterface server) {
@@ -27,7 +28,19 @@ public class ChatEventHandlerServer implements EventHandler {
 			}
 			server.sendEventToAll(event);
 			break;
-
+		case DELAY_PLS:
+			int clientId = -1;
+			try {
+				clientId = (int) event.getArgument(0);
+			} catch (TooFewArgumentsExceptions e) {
+				e.printStackTrace();
+			}
+			try {
+				server.sendEventToClient(event, clientId);
+			} catch (IllegalArgumentException | NoSuchClientException e) {
+				e.printStackTrace();
+			}
+			break;
 		}
 	}
 }
