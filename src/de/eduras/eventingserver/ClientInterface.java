@@ -66,4 +66,12 @@ public interface ClientInterface {
 	 * @return connected-flag
 	 */
 	public boolean isConnected();
+
+	/**
+	 * Sets the {@link NetworkPolicy} of the client.
+	 * 
+	 * @param policy
+	 *            The policy
+	 */
+	public void setNetworkPolicy(NetworkPolicy policy);
 }
