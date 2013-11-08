@@ -93,4 +93,11 @@ public interface ServerInterface {
 	 */
 	public boolean setNetworkEventHandler(ServerNetworkEventHandler handler);
 
+	/**
+	 * Returns the name of the server.
+	 * 
+	 * @return The name
+	 */
+	public String getName();
+
 }

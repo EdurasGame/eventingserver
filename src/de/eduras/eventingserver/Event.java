@@ -36,6 +36,10 @@ public class Event {
 		arguments.add(object);
 	}
 
+	public int getNumberOfArguments() {
+		return arguments.size();
+	}
+
 	public Object getArgument(int i) throws TooFewArgumentsExceptions {
 		if (i >= arguments.size()) {
 			throw new TooFewArgumentsExceptions(i, arguments.size());
