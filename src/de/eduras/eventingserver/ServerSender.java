@@ -10,6 +10,7 @@ import java.net.SocketException;
 
 import de.eduras.eventingserver.Event.PacketType;
 import de.eduras.eventingserver.exceptions.BufferIsEmptyException;
+import de.eduras.eventingserver.exceptions.TooFewArgumentsExceptions;
 import de.eduras.eventingserver.test.NoSuchClientException;
 
 /**
@@ -72,6 +73,8 @@ class ServerSender extends Thread {
 	 */
 	private void sendUDPMessage(String message) {
 		for (ServerClient client : server.clients.values()) {
+			if (!client.isUdpSetUp())
+				return;
 			SocketAddress clientAddress = client.getUdpAddress();
 			byte[] messageAsBytes = message.getBytes();
 			try {
@@ -194,8 +197,10 @@ class ServerSender extends Thread {
 	 *            The event
 	 * @throws IllegalArgumentException
 	 *             Thrown if an argument in the event is illegal.
+	 * @throws TooFewArgumentsExceptions
 	 */
-	public void sendEventToAll(Event event) throws IllegalArgumentException {
+	public void sendEventToAll(Event event) throws IllegalArgumentException,
+			TooFewArgumentsExceptions {
 		String eventAsString;
 		eventAsString = NetworkMessageSerializer.serializeEvent(event);
 
@@ -216,9 +221,11 @@ class ServerSender extends Thread {
 	 * @throws NoSuchClientException
 	 * @throws IllegalArgumentException
 	 *             Thrown when an argument in the given event is illegal.
+	 * @throws TooFewArgumentsExceptions
 	 */
 	public void sendEventToClient(Event event, int clientId)
-			throws NoSuchClientException, IllegalArgumentException {
+			throws NoSuchClientException, IllegalArgumentException,
+			TooFewArgumentsExceptions {
 		String eventAsString;
 		eventAsString = NetworkMessageSerializer.serializeEvent(event);
 		PacketType packetType = networkPolicy.determinePacketType(event);

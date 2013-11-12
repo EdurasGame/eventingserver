@@ -5,14 +5,17 @@ import java.util.LinkedList;
 import de.eduras.eventingserver.exceptions.GivenParametersDoNotFitToEventException;
 import de.eduras.eventingserver.exceptions.InvalidMessageFormatException;
 import de.eduras.eventingserver.exceptions.MessageNotSupportedException;
+import de.eduras.eventingserver.exceptions.TooFewArgumentsExceptions;
 
 class NetworkMessageSerializer {
 	public static String serializeEvent(Event event)
-			throws IllegalArgumentException {
+			throws IllegalArgumentException, TooFewArgumentsExceptions {
 		String eventString = "##";
 		eventString += event.getEventNumber();
 
-		for (Object argument : event.arguments) {
+		int numArgs = event.getNumberOfArguments();
+		for (int i = 0; i < numArgs; i++) {
+			Object argument = event.getArgument(i);
 
 			// delimiter
 			eventString += "#";

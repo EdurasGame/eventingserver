@@ -6,6 +6,7 @@ import java.net.Socket;
 
 import de.eduras.eventingserver.Event.PacketType;
 import de.eduras.eventingserver.exceptions.ConnectionLostException;
+import de.eduras.eventingserver.exceptions.TooFewArgumentsExceptions;
 
 /**
  * A client that connects to the game server and starts receiving and sending
@@ -113,6 +114,7 @@ public class Client implements ClientInterface {
 		return clientId;
 	}
 
+	@Override
 	public void setNetworkPolicy(NetworkPolicy policy) {
 		this.networkPolicy = policy;
 	}
@@ -170,7 +172,8 @@ public class Client implements ClientInterface {
 	}
 
 	@Override
-	public boolean sendEvent(Event event) throws IllegalArgumentException {
+	public boolean sendEvent(Event event) throws IllegalArgumentException,
+			TooFewArgumentsExceptions {
 		String eventAsString = NetworkMessageSerializer.serializeEvent(event);
 		PacketType packetType = networkPolicy.determinePacketType(event);
 		try {

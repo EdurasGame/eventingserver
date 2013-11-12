@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 import de.eduras.eventingserver.Event.PacketType;
+import de.eduras.eventingserver.exceptions.TooFewArgumentsExceptions;
 import de.eduras.eventingserver.test.NoSuchClientException;
 
 /**
@@ -58,6 +59,7 @@ public class Server implements ServerInterface {
 	/**
 	 * @return name of this server.
 	 */
+	@Override
 	public String getName() {
 		return name;
 	}
@@ -288,13 +290,15 @@ public class Server implements ServerInterface {
 
 	@Override
 	public boolean sendEventToClient(Event event, int clientId)
-			throws NoSuchClientException {
+			throws NoSuchClientException, IllegalArgumentException,
+			TooFewArgumentsExceptions {
 		serverSender.sendEventToClient(event, clientId);
 		return true;
 	}
 
 	@Override
-	public boolean sendEventToAll(Event event) {
+	public boolean sendEventToAll(Event event) throws IllegalArgumentException,
+			TooFewArgumentsExceptions {
 		serverSender.sendEventToAll(event);
 		return true;
 	}

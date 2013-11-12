@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import de.eduras.eventingserver.Client;
 import de.eduras.eventingserver.ClientInterface;
 import de.eduras.eventingserver.Event;
+import de.eduras.eventingserver.exceptions.TooFewArgumentsExceptions;
 
 public class ChatClient {
 	public static void main(String[] args) {
@@ -45,14 +46,30 @@ public class ChatClient {
 					Event event = new Event(ChatEventHandlerServer.DELAY_PLS);
 					event.putArgument(client.getClientId());
 					event.putArgument(System.currentTimeMillis());
-					client.sendEvent(event);
+					try {
+						client.sendEvent(event);
+					} catch (IllegalArgumentException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (TooFewArgumentsExceptions e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			} else {
 				Event messageEvent = new Event(
 						ChatEventHandlerServer.MESSAGE_SENT_EVENT);
 				messageEvent.putArgument(name);
 				messageEvent.putArgument(userInput);
-				client.sendEvent(messageEvent);
+				try {
+					client.sendEvent(messageEvent);
+				} catch (IllegalArgumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (TooFewArgumentsExceptions e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 

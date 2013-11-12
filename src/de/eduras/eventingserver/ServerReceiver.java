@@ -64,7 +64,8 @@ class ServerReceiver {
 
 					// handle internal
 					InternalMessageHandler.handleInternalMessagesServer(server,
-							internalAndRest.getFirst(), null);
+							internalAndRest.getFirst(),
+							packet.getSocketAddress());
 
 					inputBuffer.append(internalAndRest.getSecond());
 

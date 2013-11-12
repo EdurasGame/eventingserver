@@ -26,7 +26,15 @@ public class ChatEventHandlerServer implements EventHandler {
 			} catch (TooFewArgumentsExceptions e) {
 				e.printStackTrace();
 			}
-			server.sendEventToAll(event);
+			try {
+				server.sendEventToAll(event);
+			} catch (IllegalArgumentException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (TooFewArgumentsExceptions e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			break;
 		case DELAY_PLS:
 			int clientId = -1;
@@ -36,7 +44,12 @@ public class ChatEventHandlerServer implements EventHandler {
 				e.printStackTrace();
 			}
 			try {
-				server.sendEventToClient(event, clientId);
+				try {
+					server.sendEventToClient(event, clientId);
+				} catch (TooFewArgumentsExceptions e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			} catch (IllegalArgumentException | NoSuchClientException e) {
 				e.printStackTrace();
 			}

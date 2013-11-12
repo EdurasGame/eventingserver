@@ -1,5 +1,7 @@
 package de.eduras.eventingserver;
 
+import de.eduras.eventingserver.exceptions.TooFewArgumentsExceptions;
+
 public interface ClientInterface {
 
 	/**
@@ -36,8 +38,10 @@ public interface ClientInterface {
 	 * @return Success flag.
 	 * @throws IllegalArgumentException
 	 *             thrown when an argument in the event is illegal.
+	 * @throws TooFewArgumentsExceptions
 	 */
-	public boolean sendEvent(Event event) throws IllegalArgumentException;
+	public boolean sendEvent(Event event) throws IllegalArgumentException,
+			TooFewArgumentsExceptions;
 
 	/**
 	 * Set the {@link EventHandler} that is called when an event arrives at the
