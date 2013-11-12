@@ -2,6 +2,7 @@ package de.eduras.eventingserver;
 
 import java.util.LinkedList;
 
+import de.eduras.eventingserver.exceptions.TooFewArgumentsExceptions;
 import de.eduras.eventingserver.test.NoSuchClientException;
 
 public interface ServerInterface {
@@ -40,11 +41,13 @@ public interface ServerInterface {
 	 * @param clientId
 	 *            The client's id.
 	 * @return Success flag.
+	 * @throws TooFewArgumentsExceptions
 	 * @throws Thrown
 	 *             if the argument contains an illegal argument.
 	 */
 	public boolean sendEventToClient(Event event, int clientId)
-			throws NoSuchClientException, IllegalArgumentException;
+			throws NoSuchClientException, IllegalArgumentException,
+			TooFewArgumentsExceptions;
 
 	/**
 	 * Sends an {@link Event} to all registered clients.
@@ -54,8 +57,10 @@ public interface ServerInterface {
 	 * @return
 	 * @throws IllegalArgumentException
 	 *             Thrown if the event contains an illegal argument.
+	 * @throws TooFewArgumentsExceptions
 	 */
-	public boolean sendEventToAll(Event event) throws IllegalArgumentException;
+	public boolean sendEventToAll(Event event) throws IllegalArgumentException,
+			TooFewArgumentsExceptions;
 
 	/**
 	 * Returns a {@link LinkedList} of ids of all clients currently connected to
