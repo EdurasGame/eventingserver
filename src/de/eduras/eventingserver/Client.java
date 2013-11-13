@@ -72,7 +72,7 @@ public class Client implements ClientInterface {
 			networkEventHandler.onConnectionLost();
 		}
 		receiver.start();
-		sender = new ClientSender(socket, this);
+		sender = new ClientSender(socket);
 		sender.setUdpSocket(receiver.getUdpSocket());
 		return true;
 		// createEchoSocket();

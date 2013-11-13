@@ -22,7 +22,6 @@ class ClientSender {
 	private boolean active;
 	private PrintWriter messageWriter = null;
 	private DatagramSocket udpSocket;
-	private Client client;
 
 	boolean isUDPSetUp = false;
 
@@ -32,7 +31,7 @@ class ClientSender {
 	 * @param socket
 	 *            The socket to send messages via.
 	 */
-	public ClientSender(Socket socket, Client client) {
+	public ClientSender(Socket socket) {
 
 		this.socket = socket;
 		active = true;
@@ -44,8 +43,6 @@ class ClientSender {
 			// EduLog.passException(e);
 			e.printStackTrace();
 		}
-
-		this.client = client;
 	}
 
 	/**
