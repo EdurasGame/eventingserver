@@ -13,12 +13,24 @@ class NetworkMessageSerializer {
 
 	public static String serializeEvent(Event event)
 			throws IllegalArgumentException, TooFewArgumentsExceptions {
+
+		if (event == null) {
+			throw new IllegalArgumentException(
+					"The given event must not be null!");
+		}
+
 		String eventString = "##";
 		eventString += event.getEventNumber();
 
 		int numArgs = event.getNumberOfArguments();
 		for (int i = 0; i < numArgs; i++) {
 			Object argument = event.getArgument(i);
+
+			if (argument == null) {
+				throw new IllegalArgumentException(
+						"You are trying to parse a null argument for event #"
+								+ event.getEventNumber() + ", argument #" + i);
+			}
 
 			// delimiter
 			eventString += "#";
