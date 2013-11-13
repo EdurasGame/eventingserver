@@ -8,6 +8,9 @@ import de.eduras.eventingserver.exceptions.MessageNotSupportedException;
 import de.eduras.eventingserver.exceptions.TooFewArgumentsExceptions;
 
 class NetworkMessageSerializer {
+
+	public static UserSpecificTypeParser userSpecificParser;
+
 	public static String serializeEvent(Event event)
 			throws IllegalArgumentException, TooFewArgumentsExceptions {
 		String eventString = "##";
@@ -21,21 +24,26 @@ class NetworkMessageSerializer {
 			eventString += "#";
 
 			String type = "";
+			String argumentString = "";
 
 			if (argument instanceof Boolean) {
 				type += "B";
+				argumentString = argument.toString();
 			}
 
 			if (argument instanceof Double) {
 				type += "D";
+				argumentString = argument.toString();
 			}
 
 			if (argument instanceof Integer) {
 				type += "I";
+				argumentString = argument.toString();
 			}
 
 			if (argument instanceof Long) {
 				type += "L";
+				argumentString = argument.toString();
 			}
 
 			if (argument instanceof String) {
@@ -45,18 +53,33 @@ class NetworkMessageSerializer {
 							+ (String) argument + " contains # or &!");
 				}
 				type += "S";
+				argumentString = argument.toString();
 			}
 
 			if (argument instanceof Float) {
 				type += "F";
+				argumentString = argument.toString();
+			}
+
+			if (type == "" && !(userSpecificParser == null)) {
+				try {
+					argumentString = userSpecificParser
+							.parseObjectToString(argument);
+					type = "U";
+				} catch (IllegalArgumentException e) {
+					e.printStackTrace();
+					type = "";
+				}
 			}
 
 			if (type == "") {
-				// TODO: Call a user specific handler if the given object is not
-				// a simple data type
+				throw new IllegalArgumentException(
+						"The argument "
+								+ argument
+								+ " has an unknown type. Define a specific handler for it!");
 			}
 
-			eventString += type + argument.toString();
+			eventString += type + argumentString;
 		}
 
 		return eventString;
@@ -162,12 +185,19 @@ class NetworkMessageSerializer {
 			case 'L':
 				argumentAsObject = Long.parseLong(objectStr);
 				break;
-			default: // TODO: Call user specific handler if it's not a
-						// simple
-						// datatype.
+			case 'U':
+				argumentAsObject = userSpecificParser
+						.parseStringToObject(objectStr);
+				break;
+			default:
 				break;
 			}
-			// TODO: if argument still null, throw an exception.
+
+			if (argumentAsObject == null) {
+				throw new IllegalArgumentException("Can not parse the string '"
+						+ singleArgumentStr
+						+ " to an argument'. Define a specific handler on it!");
+			}
 
 			event.putArgument(argumentAsObject);
 		}
@@ -200,5 +230,15 @@ class NetworkMessageSerializer {
 			b.append(s);
 		}
 		return b.toString();
+	}
+
+	/**
+	 * Set the user specific parser that will be used if an argument is not one
+	 * of the basic types.
+	 * 
+	 * @param parser
+	 */
+	public static void setUserSpecificParser(UserSpecificTypeParser parser) {
+		userSpecificParser = parser;
 	}
 }
