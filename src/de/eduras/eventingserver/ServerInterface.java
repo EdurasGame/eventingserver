@@ -5,6 +5,12 @@ import java.util.LinkedList;
 import de.eduras.eventingserver.exceptions.TooFewArgumentsExceptions;
 import de.eduras.eventingserver.test.NoSuchClientException;
 
+/**
+ * This interface defines the API of the server.
+ * 
+ * @author Florian Mai <florian.ren.mai@googlemail.com>
+ * 
+ */
 public interface ServerInterface {
 
 	/**
