@@ -45,8 +45,9 @@ class InternalMessageHandler {
 		return makeAnInternalMessage(CLIENT_CONNECTED + "#" + clientId);
 	}
 
-	static String createClientKickedMessage(int clientId) {
-		return makeAnInternalMessage(CLIENT_KICKED + "#" + clientId);
+	static String createClientKickedMessage(int clientId, String reason) {
+		return makeAnInternalMessage(CLIENT_KICKED + "#" + clientId + "#"
+				+ reason);
 	}
 
 	static String createClientDisconnectedMessage(int clientId) {
@@ -136,7 +137,10 @@ class InternalMessageHandler {
 					client.networkEventHandler.onClientKicked(Integer
 							.parseInt(NetworkMessageSerializer
 									.internalMessageGetArgument(
-											internalMessage, 0)));
+											internalMessage, 0)),
+							NetworkMessageSerializer
+									.internalMessageGetArgument(
+											internalMessage, 1));
 				} catch (NumberFormatException e) {
 					e.printStackTrace();
 					continue;
@@ -185,5 +189,14 @@ class InternalMessageHandler {
 				new UDPInitializer().start();
 			}
 		}
+	}
+
+	public static boolean isCompatibleString(String string)
+			throws IllegalArgumentException {
+		if (string.contains("#") || string.contains("&")) {
+			throw new IllegalArgumentException("String argument " + string
+					+ " contains # or &!");
+		}
+		return true;
 	}
 }

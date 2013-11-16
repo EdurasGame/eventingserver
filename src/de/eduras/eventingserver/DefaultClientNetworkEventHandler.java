@@ -14,8 +14,8 @@ public class DefaultClientNetworkEventHandler extends
 	}
 
 	@Override
-	public void onClientKicked(int clientId) {
+	public void onClientKicked(int clientId, String reason) {
 		System.out.println("Client #" + clientId
-				+ " was kicked from the server.");
+				+ " was kicked from the server. Reason: " + reason);
 	}
 }

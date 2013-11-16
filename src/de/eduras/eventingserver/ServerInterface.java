@@ -76,8 +76,24 @@ public interface ServerInterface {
 	 * @param clientId
 	 *            The id of the client to kick.
 	 * @return Success flag.
+	 * 
+	 *         This function has the same effect as kickClient(int,String) with
+	 *         an empty string.
 	 */
 	public boolean kickClient(int clientId);
+
+	/**
+	 * Terminates the connection to the client with the given id. The client
+	 * will receive the given 'reason' string as an explanation why.
+	 * 
+	 * @param clientId
+	 *            The id of the client to kick.
+	 * @param reason
+	 *            The message that will be shown to the client explaining why he
+	 *            has been kicked.
+	 * @return Success flag.
+	 */
+	public boolean kickClient(int clientId, String reason);
 
 	/**
 	 * Sets the {@link EventHandler} to which events are passed.

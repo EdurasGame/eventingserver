@@ -42,7 +42,8 @@ public class ChatServerSample {
 				}
 				if (userInput.startsWith("/kick")) {
 					int clientId = Integer.parseInt(userInput.split(" ")[1]);
-					server.kickClient(clientId);
+					String reason = userInput.split(" ")[2];
+					server.kickClient(clientId, reason);
 				}
 				if (userInput.equals("/help")) {
 					System.out.println("Available commands:");

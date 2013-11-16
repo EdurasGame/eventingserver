@@ -59,13 +59,11 @@ class NetworkMessageSerializer {
 			}
 
 			if (argument instanceof String) {
-				if (((String) argument).contains("#")
-						|| ((String) argument).contains("&")) {
-					throw new IllegalArgumentException("String argument "
-							+ (String) argument + " contains # or &!");
+				if (InternalMessageHandler
+						.isCompatibleString((String) argument)) {
+					type += "S";
+					argumentString = argument.toString();
 				}
-				type += "S";
-				argumentString = argument.toString();
 			}
 
 			if (argument instanceof Float) {

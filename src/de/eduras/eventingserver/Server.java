@@ -141,14 +141,15 @@ public class Server implements ServerInterface {
 	 * 
 	 * @param client
 	 *            Client to remove.
+	 * @param reason
 	 */
-	void kickClient(ServerClient client) {
-		handleClientDisconnect(client);
-
+	void kickClient(ServerClient client, String reason) {
 		// inform clients
-		serverSender.sendMessageToAll(InternalMessageHandler
-				.createClientKickedMessage(client.getClientId()),
-				Event.PacketType.TCP);
+		serverSender.sendMessageToAll(
+				InternalMessageHandler.createClientKickedMessage(
+						client.getClientId(), reason), Event.PacketType.TCP);
+
+		handleClientDisconnect(client);
 	}
 
 	/**
@@ -310,6 +311,15 @@ public class Server implements ServerInterface {
 
 	@Override
 	public boolean kickClient(int clientId) {
+		return kickClient(clientId, "");
+	}
+
+	@Override
+	public boolean kickClient(int clientId, String reason) {
+		if (!InternalMessageHandler.isCompatibleString(reason)) {
+			return false;
+		}
+
 		ServerClient client;
 		try {
 			client = getClientById(clientId);
@@ -317,7 +327,7 @@ public class Server implements ServerInterface {
 			e.printStackTrace();
 			return false;
 		}
-		kickClient(client);
+		kickClient(client, reason);
 		return true;
 	}
 

@@ -6,31 +6,29 @@ public class ChatNetworkEventHandlerClient implements ClientNetworkEventHandler 
 
 	@Override
 	public void onConnectionLost() {
-
+		System.out.println("You lost the connection.");
 	}
 
 	@Override
 	public void onDisconnected() {
-		// TODO Auto-generated method stub
+		System.out.println("You disconnected.");
 
 	}
 
 	@Override
 	public void onClientDisconnected(int clientId) {
-		// TODO Auto-generated method stub
+		System.out.println("Client with id #" + clientId + " disconnected.");
 
 	}
 
 	@Override
 	public void onClientConnected(int clientId) {
-		// TODO Auto-generated method stub
+		System.out.println("Client with id #" + clientId + " connected.");
 
 	}
 
 	@Override
-	public void onClientKicked(int clientId) {
-		// TODO Auto-generated method stub
-
+	public void onClientKicked(int clientId, String reason) {
+		System.out.println("You were kicked because " + reason);
 	}
-
 }

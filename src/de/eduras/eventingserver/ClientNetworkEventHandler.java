@@ -6,6 +6,6 @@ public interface ClientNetworkEventHandler extends NetworkEventHandler {
 
 	public void onDisconnected();
 
-	public void onClientKicked(int clientId);
+	public void onClientKicked(int clientId, String reason);
 
 }
