@@ -31,4 +31,9 @@ public class ChatNetworkEventHandlerClient implements ClientNetworkEventHandler 
 	public void onClientKicked(int clientId, String reason) {
 		System.out.println("You were kicked because " + reason);
 	}
+
+	@Override
+	public void onServerIsFull() {
+		System.out.println("Cannot connect because server is full.");
+	}
 }

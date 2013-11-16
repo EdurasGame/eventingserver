@@ -18,4 +18,9 @@ public class DefaultClientNetworkEventHandler extends
 		System.out.println("Client #" + clientId
 				+ " was kicked from the server. Reason: " + reason);
 	}
+
+	@Override
+	public void onServerIsFull() {
+		System.out.println("Cannot connect because server is full.");
+	}
 }

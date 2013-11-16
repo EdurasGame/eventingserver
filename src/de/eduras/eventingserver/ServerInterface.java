@@ -121,4 +121,21 @@ public interface ServerInterface {
 	 */
 	public String getName();
 
+	/**
+	 * Sets the maximum number of clients that can connect. All others will
+	 * immediately be kicked. If set to a negative number it is assumed to be
+	 * unlimited.
+	 * 
+	 * @param max
+	 *            The new maximum of clients.
+	 */
+	public void setMaximumClients(int max);
+
+	/**
+	 * Returns the maximum number of clients that can connect.
+	 * 
+	 * @return The maximum number of clients.
+	 */
+	public int getMaximumClients();
+
 }

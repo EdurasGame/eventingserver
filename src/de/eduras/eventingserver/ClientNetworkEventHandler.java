@@ -8,4 +8,6 @@ public interface ClientNetworkEventHandler extends NetworkEventHandler {
 
 	public void onClientKicked(int clientId, String reason);
 
+	public void onServerIsFull();
+
 }

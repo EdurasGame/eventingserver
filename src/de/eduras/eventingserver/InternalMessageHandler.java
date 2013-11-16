@@ -15,6 +15,7 @@ class InternalMessageHandler {
 	private static final String CLIENT_CONNECTED = "CLIENT_CONNECTED";
 	private static final String CLIENT_DISCONNECTED = "CLIENT_DISCONNECTED";
 	private static final String CLIENT_KICKED = "CLIENT_KICKED";
+	private static final String SERVER_FULL = "SERVER_FULL";
 
 	static Pair<LinkedList<String>, String> extractInternalMessage(
 			String messages) {
@@ -150,6 +151,11 @@ class InternalMessageHandler {
 				}
 			}
 
+			if (internalMessage.contains(SERVER_FULL)) {
+				client.networkEventHandler.onServerIsFull();
+				client.disconnect();
+			}
+
 			if (internalMessage.contains(CONNECTION_ESTABLISHED)) {
 				client.connected = true;
 				try {
@@ -198,5 +204,9 @@ class InternalMessageHandler {
 					+ " contains # or &!");
 		}
 		return true;
+	}
+
+	public static String createServerFullMessage() {
+		return makeAnInternalMessage(SERVER_FULL);
 	}
 }

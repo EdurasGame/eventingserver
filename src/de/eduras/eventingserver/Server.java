@@ -1,6 +1,7 @@
 package de.eduras.eventingserver;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
@@ -36,6 +37,7 @@ public class Server implements ServerInterface {
 	boolean running;
 	InternalMessageHandler internalMessageHandler;
 	ServerNetworkEventHandler networkEventHandler;
+	private int maxClients;
 
 	/**
 	 * Creates a new server.
@@ -54,6 +56,7 @@ public class Server implements ServerInterface {
 		clients = new HashMap<Integer, ServerClient>();
 		decoder = new ServerDecoder(serverReceiver.inputBuffer, this);
 		networkEventHandler = new DefaultServerNetworkEventHandler();
+		maxClients = 5;
 	}
 
 	/**
@@ -72,6 +75,10 @@ public class Server implements ServerInterface {
 	 * @throws IOException
 	 */
 	private void handleConnection(Socket clientSocket) throws IOException {
+		if (clients.size() == maxClients) {
+			informServerFull(clientSocket);
+			return;
+		}
 		final ServerClient client = addClient(clientSocket);
 
 		// inform client of successful connection.
@@ -96,6 +103,18 @@ public class Server implements ServerInterface {
 
 		// call networkhandler
 		networkEventHandler.onClientConnected(client.getClientId());
+	}
+
+	private void informServerFull(Socket clientSocket) {
+
+		try {
+			PrintWriter pw = new PrintWriter(clientSocket.getOutputStream(),
+					true);
+			pw.println(InternalMessageHandler.createServerFullMessage());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	/**
@@ -341,5 +360,15 @@ public class Server implements ServerInterface {
 	public boolean setNetworkEventHandler(ServerNetworkEventHandler handler) {
 		this.networkEventHandler = handler;
 		return true;
+	}
+
+	@Override
+	public void setMaximumClients(int max) {
+		maxClients = max;
+	}
+
+	@Override
+	public int getMaximumClients() {
+		return maxClients;
 	}
 }
