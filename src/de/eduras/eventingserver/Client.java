@@ -195,4 +195,15 @@ public class Client implements ClientInterface {
 			ClientNetworkEventHandler networkEventHandler) {
 		this.networkEventHandler = networkEventHandler;
 	}
+
+	@Override
+	public void ping() {
+		try {
+			sender.sendMessage(
+					InternalMessageHandler.createPingMessage(clientId,
+							System.currentTimeMillis()), PacketType.TCP);
+		} catch (ConnectionLostException e) {
+			e.printStackTrace();
+		}
+	}
 }

@@ -16,6 +16,7 @@ class InternalMessageHandler {
 	private static final String CLIENT_DISCONNECTED = "CLIENT_DISCONNECTED";
 	private static final String CLIENT_KICKED = "CLIENT_KICKED";
 	private static final String SERVER_FULL = "SERVER_FULL";
+	private static final String PING = "PING";
 
 	static Pair<LinkedList<String>, String> extractInternalMessage(
 			String messages) {
@@ -63,6 +64,10 @@ class InternalMessageHandler {
 		return makeAnInternalMessage(UDP_READY);
 	}
 
+	static String createPingMessage(int clientId, long ms) {
+		return makeAnInternalMessage(PING + "#" + clientId + "#" + ms);
+	}
+
 	// TODO: this is solved very very badly. think about it some day. the
 	// problem is to make the code look good and pass arguments that are not
 	// included in the message like the socketaddress of the udp hi message :(
@@ -92,6 +97,26 @@ class InternalMessageHandler {
 					continue;
 				}
 			}
+
+			if (internalMessage.contains(PING)) {
+				int clientId;
+				try {
+					clientId = Integer.parseInt(NetworkMessageSerializer
+							.internalMessageGetArgument(internalMessage, 0));
+
+					ServerClient client = server.getClientById(clientId);
+					if (client == null || client.isUdpSetUp()) {
+						continue;
+					}
+
+					server.serverSender.sendMessageToClient(clientId,
+							internalMessage, PacketType.TCP);
+
+				} catch (Exception e) {
+					e.printStackTrace();
+					continue;
+				}
+			}
 		}
 	}
 
@@ -101,6 +126,20 @@ class InternalMessageHandler {
 
 			if (internalMessage.contains(UDP_READY)) {
 				client.sender.isUDPSetUp = true;
+			}
+
+			if (internalMessage.contains(PING)) {
+				long latency;
+				try {
+					latency = System.currentTimeMillis()
+							- Long.parseLong(NetworkMessageSerializer
+									.internalMessageGetArgument(
+											internalMessage, 1));
+				} catch (Exception e) {
+					e.printStackTrace();
+					continue;
+				}
+				client.networkEventHandler.onPingReceived(latency);
 			}
 
 			if (internalMessage.contains(CLIENT_CONNECTED)) {

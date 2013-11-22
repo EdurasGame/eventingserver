@@ -36,4 +36,10 @@ public class ChatNetworkEventHandlerClient implements ClientNetworkEventHandler 
 	public void onServerIsFull() {
 		System.out.println("Cannot connect because server is full.");
 	}
+
+	@Override
+	public void onPingReceived(long latency) {
+		// TODO Auto-generated method stub
+
+	}
 }

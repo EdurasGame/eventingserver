@@ -23,4 +23,9 @@ public class DefaultClientNetworkEventHandler extends
 	public void onServerIsFull() {
 		System.out.println("Cannot connect because server is full.");
 	}
+
+	@Override
+	public void onPingReceived(long ms) {
+		System.out.println("Ping: " + ms);
+	}
 }

@@ -37,4 +37,12 @@ public interface ClientNetworkEventHandler extends NetworkEventHandler {
 	 */
 	public void onServerIsFull();
 
+	/**
+	 * Is called when a reply to a former ping request was received.
+	 * 
+	 * @param latency
+	 *            The ping in milliseconds.
+	 */
+	public void onPingReceived(long latency);
+
 }

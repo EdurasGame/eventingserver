@@ -78,4 +78,10 @@ public interface ClientInterface {
 	 *            The policy
 	 */
 	public void setNetworkPolicy(NetworkPolicy policy);
+
+	/**
+	 * Pings the server. OnPingReceived will be called eventually on your
+	 * {@link NetworkEventHandler}.
+	 */
+	public void ping();
 }
