@@ -1,5 +1,7 @@
 package de.eduras.eventingserver;
 
+import java.net.InetAddress;
+
 import de.eduras.eventingserver.exceptions.TooFewArgumentsExceptions;
 
 public interface ClientInterface {
@@ -84,4 +86,11 @@ public interface ClientInterface {
 	 * {@link NetworkEventHandler}.
 	 */
 	public void ping();
+
+	/**
+	 * Returns the server's connection details as InetAddress.
+	 * 
+	 * @return The server's address.
+	 */
+	public InetAddress getServerAddress();
 }

@@ -1,6 +1,7 @@
 package de.eduras.eventingserver;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
@@ -206,4 +207,10 @@ public class Client implements ClientInterface {
 			e.printStackTrace();
 		}
 	}
+
+	@Override
+	public InetAddress getServerAddress() {
+		return socket.getInetAddress();
+	}
+
 }
