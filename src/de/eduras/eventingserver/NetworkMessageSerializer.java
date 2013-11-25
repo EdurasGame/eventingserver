@@ -71,6 +71,11 @@ class NetworkMessageSerializer {
 				argumentString = argument.toString();
 			}
 
+			if (argument instanceof byte[]) {
+				type += "A";
+				argumentString = byteArrayToString((byte[]) argument);
+			}
+
 			if (type == "" && !(userSpecificParser == null)) {
 				try {
 					argumentString = userSpecificParser
@@ -93,6 +98,15 @@ class NetworkMessageSerializer {
 		}
 
 		return eventString;
+	}
+
+	private static String byteArrayToString(byte[] bytes) {
+		String bytesAsString = "";
+
+		for (int i = 0; i < bytes.length; i++) {
+			bytesAsString += "b" + bytes[i];
+		}
+		return bytesAsString;
 	}
 
 	public static LinkedList<Event> deserializeEvent(String eventStr) {
@@ -195,6 +209,9 @@ class NetworkMessageSerializer {
 			case 'L':
 				argumentAsObject = Long.parseLong(objectStr);
 				break;
+			case 'A':
+				argumentAsObject = stringToByteArray(objectStr);
+				break;
 			case 'U':
 				argumentAsObject = userSpecificParser
 						.parseStringToObject(objectStr);
@@ -212,6 +229,17 @@ class NetworkMessageSerializer {
 			event.putArgument(argumentAsObject);
 		}
 		return event;
+	}
+
+	private static byte[] stringToByteArray(String objectStr) {
+		String[] bytesAsString = objectStr.split("b");
+		int length = Integer.parseInt(bytesAsString[0]);
+
+		byte[] bytes = new byte[length];
+		for (int i = 0; i < length; i++) {
+			bytes[i] = Byte.parseByte(bytesAsString[i + 1], 10);
+		}
+		return bytes;
 	}
 
 	public static String internalMessageGetArgument(String messages, int i)
