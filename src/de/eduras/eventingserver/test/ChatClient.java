@@ -56,6 +56,9 @@ public class ChatClient {
 						e.printStackTrace();
 					}
 				}
+				if (userInput.equals("/pingInternal")) {
+					client.ping();
+				}
 			} else {
 				Event messageEvent = new Event(
 						ChatEventHandlerServer.MESSAGE_SENT_EVENT);

@@ -105,12 +105,14 @@ class InternalMessageHandler {
 							.internalMessageGetArgument(internalMessage, 0));
 
 					ServerClient client = server.getClientById(clientId);
-					if (client == null || client.isUdpSetUp()) {
+					if (client == null) {
 						continue;
 					}
 
 					server.serverSender.sendMessageToClient(clientId,
-							internalMessage, PacketType.TCP);
+							InternalMessageHandler
+									.makeAnInternalMessage(internalMessage),
+							PacketType.TCP);
 
 				} catch (Exception e) {
 					e.printStackTrace();

@@ -39,7 +39,7 @@ public class ChatNetworkEventHandlerClient implements ClientNetworkEventHandler 
 
 	@Override
 	public void onPingReceived(long latency) {
-		// TODO Auto-generated method stub
+		System.out.println("The ping is " + latency + "ms");
 
 	}
 }
