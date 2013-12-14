@@ -101,7 +101,7 @@ class NetworkMessageSerializer {
 	}
 
 	private static String byteArrayToString(byte[] bytes) {
-		String bytesAsString = "";
+		String bytesAsString = "" + bytes.length;
 
 		for (int i = 0; i < bytes.length; i++) {
 			bytesAsString += "b" + bytes[i];
