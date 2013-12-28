@@ -51,8 +51,8 @@ public class Server implements ServerInterface {
 		running = false;
 		port = -1;
 		name = "Unknown";
-		serverSender = new ServerSender(this);
 		serverReceiver = new ServerReceiver(this);
+		serverSender = new ServerSender(this);
 		clients = new HashMap<Integer, ServerClient>();
 		decoder = new ServerDecoder(serverReceiver.inputBuffer, this);
 		networkEventHandler = new DefaultServerNetworkEventHandler();

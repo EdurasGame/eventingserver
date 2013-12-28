@@ -15,6 +15,7 @@ class ServerReceiver {
 	UDPMessageReceiver serverUDPReceiver;
 	Server server;
 	Buffer inputBuffer;
+	DatagramSocket udpSocket;
 
 	public ServerReceiver(Server server) {
 		this.server = server;
@@ -43,7 +44,6 @@ class ServerReceiver {
 
 		@Override
 		public void run() {
-			DatagramSocket udpSocket = null;
 			try {
 				udpSocket = new DatagramSocket(server.getPort());
 			} catch (SocketException e) {

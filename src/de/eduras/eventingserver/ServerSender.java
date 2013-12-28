@@ -3,10 +3,8 @@ package de.eduras.eventingserver;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketAddress;
-import java.net.SocketException;
 import java.util.HashMap;
 
 import de.eduras.eventingserver.Event.PacketType;
@@ -27,7 +25,6 @@ class ServerSender extends Thread {
 	 */
 	private final static int SEND_INTERVAL = 33;
 
-	private DatagramSocket udpSocket;
 	private final Server server;
 	private HashMap<Integer, BufferSenderForClient> bufferSenders;
 
@@ -40,11 +37,7 @@ class ServerSender extends Thread {
 	 *            Target server.
 	 */
 	public ServerSender(Server server) {
-		try {
-			this.udpSocket = new DatagramSocket();
-		} catch (SocketException e) {
-			server.stop();
-		}
+
 		this.setName("ServerSender");
 
 		networkPolicy = new DefaultNetworkPolicy();
@@ -84,7 +77,7 @@ class ServerSender extends Thread {
 			DatagramPacket packet = new DatagramPacket(messageAsBytes,
 					messageAsBytes.length, clientaddress, port);
 			try {
-				udpSocket.send(packet);
+				server.serverReceiver.udpSocket.send(packet);
 			} catch (IOException e) {
 				// EduLog.passException(e);
 				e.printStackTrace();
@@ -280,7 +273,7 @@ class ServerSender extends Thread {
 			try {
 				DatagramPacket packet = new DatagramPacket(messageAsBytes,
 						messageAsBytes.length, clientAddress);
-				udpSocket.send(packet);
+				server.serverReceiver.udpSocket.send(packet);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
