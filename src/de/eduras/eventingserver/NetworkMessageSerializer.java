@@ -130,7 +130,7 @@ class NetworkMessageSerializer {
 				event = deserializeMessage(msg);
 			} catch (InvalidMessageFormatException
 					| GivenParametersDoNotFitToEventException
-					| MessageNotSupportedException e) {
+					| MessageNotSupportedException | IllegalArgumentException e) {
 				e.printStackTrace();
 				continue;
 			}
@@ -161,7 +161,7 @@ class NetworkMessageSerializer {
 	private static Event deserializeMessage(String msg)
 			throws InvalidMessageFormatException,
 			GivenParametersDoNotFitToEventException,
-			MessageNotSupportedException {
+			MessageNotSupportedException, IllegalArgumentException {
 		if (msg.isEmpty())
 			throw new InvalidMessageFormatException(
 					"Message is empty (length 0)", msg);
@@ -182,7 +182,6 @@ class NetworkMessageSerializer {
 		}
 
 		Event event = new Event(typeInt);
-
 		for (int i = 1; i < args.length; i++) {
 			String singleArgumentStr = args[i];
 
