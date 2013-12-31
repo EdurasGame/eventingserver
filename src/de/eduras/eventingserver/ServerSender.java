@@ -158,6 +158,12 @@ class ServerSender extends Thread {
 		eventAsString = NetworkMessageSerializer.serializeEvent(event);
 		PacketType packetType = networkPolicy.determinePacketType(event);
 		BufferSenderForClient bufferSender = bufferSenders.get(clientId);
+
+		if (bufferSender == null) {
+			throw new IllegalArgumentException(
+					"Cannot find BufferSender for client #" + clientId);
+		}
+
 		if (packetType == PacketType.TCP) {
 			bufferSender.appendToTCPBuffer(eventAsString);
 		} else {
