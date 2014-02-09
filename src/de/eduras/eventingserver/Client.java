@@ -158,7 +158,8 @@ public class Client implements ClientInterface {
 	 * 
 	 * @return The number of the local port.
 	 */
-	int getPortNumber() {
+	@Override
+	public int getLocalPortNumber() {
 		return socket.getLocalPort();
 	}
 
@@ -211,6 +212,11 @@ public class Client implements ClientInterface {
 	@Override
 	public InetAddress getServerAddress() {
 		return socket.getInetAddress();
+	}
+
+	@Override
+	public int getRemotePortNumber() {
+		return socket.getPort();
 	}
 
 }

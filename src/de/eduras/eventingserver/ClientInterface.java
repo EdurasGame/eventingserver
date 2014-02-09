@@ -93,4 +93,18 @@ public interface ClientInterface {
 	 * @return The server's address.
 	 */
 	public InetAddress getServerAddress();
+
+	/**
+	 * Returns the local port.
+	 * 
+	 * @return The local port.
+	 */
+	public int getLocalPortNumber();
+
+	/**
+	 * Returns the port of the server the client is connected to.
+	 * 
+	 * @return The remote server.
+	 */
+	public int getRemotePortNumber();
 }

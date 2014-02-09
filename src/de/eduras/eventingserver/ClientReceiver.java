@@ -52,7 +52,7 @@ class ClientReceiver extends Thread {
 		}
 
 		try {
-			udpSocket = new DatagramSocket(client.getPortNumber());
+			udpSocket = new DatagramSocket(client.getLocalPortNumber());
 		} catch (SocketException e) {
 			connectionAvailable = false;
 			// EduLog.errorLF("Client.networking.udpopenerror",
