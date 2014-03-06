@@ -8,9 +8,16 @@ import de.eduras.eventingserver.Client;
 import de.eduras.eventingserver.ClientInterface;
 import de.eduras.eventingserver.Event;
 import de.eduras.eventingserver.exceptions.TooFewArgumentsExceptions;
+import de.illonis.edulog.EduLog;
 
 public class ChatClient {
 	public static void main(String[] args) {
+		try {
+			EduLog.init();
+		} catch (IOException e1) {
+			// do nothing
+		}
+
 		ClientInterface client = new Client();
 		client.setEventHandler(new ChatEventHandlerClient(client));
 		client.setNetworkPolicy(new ChatPolicy());

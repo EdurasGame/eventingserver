@@ -6,10 +6,17 @@ import java.io.InputStreamReader;
 
 import de.eduras.eventingserver.Server;
 import de.eduras.eventingserver.ServerInterface;
+import de.illonis.edulog.EduLog;
 
 public class ChatServerSample {
 
 	public static void main(String[] args) {
+		try {
+			EduLog.init();
+		} catch (IOException e1) {
+			// do nothing
+		}
+
 		ServerInterface server = new Server();
 		server.setEventHandler(new ChatEventHandlerServer(server));
 		server.setPolicy(new ChatPolicy());

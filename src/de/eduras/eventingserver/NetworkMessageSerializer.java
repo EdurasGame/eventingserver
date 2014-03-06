@@ -1,13 +1,18 @@
 package de.eduras.eventingserver;
 
 import java.util.LinkedList;
+import java.util.logging.Logger;
 
 import de.eduras.eventingserver.exceptions.GivenParametersDoNotFitToEventException;
 import de.eduras.eventingserver.exceptions.InvalidMessageFormatException;
 import de.eduras.eventingserver.exceptions.MessageNotSupportedException;
 import de.eduras.eventingserver.exceptions.TooFewArgumentsExceptions;
+import de.illonis.edulog.EduLog;
 
 class NetworkMessageSerializer {
+
+	private final static Logger L = EduLog
+			.getLoggerFor("NetworkMessageSerializer");
 
 	public static UserSpecificTypeParser userSpecificParser;
 
@@ -97,6 +102,8 @@ class NetworkMessageSerializer {
 			eventString += type + argumentString;
 		}
 
+		L.fine("Serialized string \"" + eventString + "\".");
+
 		return eventString;
 	}
 
@@ -112,9 +119,11 @@ class NetworkMessageSerializer {
 	public static LinkedList<Event> deserializeEvent(String eventStr) {
 
 		LinkedList<Event> events = new LinkedList<Event>();
+
 		if (eventStr.isEmpty())
 			return events;
-		// EduLog.info("[DESERIALIZE] orig: " + eventString);
+
+		L.fine("Deserializing string \"" + eventStr + "\".");
 		String[] messages;
 		messages = eventStr.substring(2).split("##");
 
