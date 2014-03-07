@@ -164,6 +164,8 @@ class ServerSender extends Thread {
 					"Cannot find BufferSender for client #" + clientId);
 		}
 
+		assert eventAsString != null : "An event was parsed to a null-string";
+
 		if (packetType == PacketType.TCP) {
 			bufferSender.appendToTCPBuffer(eventAsString);
 		} else {
