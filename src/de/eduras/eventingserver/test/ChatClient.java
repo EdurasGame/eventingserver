@@ -3,6 +3,8 @@ package de.eduras.eventingserver.test;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import de.eduras.eventingserver.Client;
 import de.eduras.eventingserver.ClientInterface;
@@ -12,10 +14,12 @@ import de.illonis.edulog.EduLog;
 
 public class ChatClient {
 	public static void main(String[] args) {
+		SimpleDateFormat simpleDate = new SimpleDateFormat("y-M-d-H-m-s");
+
 		try {
-			EduLog.init();
-		} catch (IOException e1) {
-			// do nothing
+			EduLog.init(simpleDate.format(new Date()) + "-client.log", 2097152);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 
 		ClientInterface client = new Client();

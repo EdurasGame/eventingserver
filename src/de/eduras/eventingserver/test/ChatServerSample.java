@@ -3,6 +3,8 @@ package de.eduras.eventingserver.test;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import de.eduras.eventingserver.Server;
 import de.eduras.eventingserver.ServerInterface;
@@ -11,10 +13,12 @@ import de.illonis.edulog.EduLog;
 public class ChatServerSample {
 
 	public static void main(String[] args) {
+		SimpleDateFormat simpleDate = new SimpleDateFormat("y-M-d-H-m-s");
+
 		try {
-			EduLog.init();
-		} catch (IOException e1) {
-			// do nothing
+			EduLog.init(simpleDate.format(new Date()) + "-server.log", 2097152);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 
 		ServerInterface server = new Server();
@@ -48,8 +52,8 @@ public class ChatServerSample {
 					}
 				}
 				if (userInput.startsWith("/kick")) {
-					int clientId = Integer.parseInt(userInput.split(" ")[1]);
-					String reason = userInput.split(" ")[2];
+					int clientId = Integer.parseInt(userInput.split(" ")[0]);
+					String reason = userInput.split(" ")[1];
 					server.kickClient(clientId, reason);
 				}
 				if (userInput.equals("/help")) {
