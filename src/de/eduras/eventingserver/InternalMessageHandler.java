@@ -128,6 +128,7 @@ class InternalMessageHandler {
 
 			if (internalMessage.contains(UDP_READY)) {
 				client.sender.isUDPSetUp = true;
+				client.connectionEstablished(client.getOwnerId());
 			}
 
 			if (internalMessage.contains(PING)) {

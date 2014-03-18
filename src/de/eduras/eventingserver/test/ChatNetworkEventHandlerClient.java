@@ -42,4 +42,10 @@ public class ChatNetworkEventHandlerClient implements ClientNetworkEventHandler 
 		System.out.println("The ping is " + latency + "ms");
 
 	}
+
+	@Override
+	public void onConnectionEstablished(int clientId) {
+		System.out.println("My connection was established! My clientId is : "
+				+ clientId);
+	}
 }

@@ -45,4 +45,13 @@ public interface ClientNetworkEventHandler extends NetworkEventHandler {
 	 */
 	public void onPingReceived(long latency);
 
+	/**
+	 * Is called when the client's connection is fully set up which includes TCP
+	 * and UDP connection.
+	 * 
+	 * @param clientId
+	 *            The id assigned to the client.
+	 */
+	public void onConnectionEstablished(int clientId);
+
 }

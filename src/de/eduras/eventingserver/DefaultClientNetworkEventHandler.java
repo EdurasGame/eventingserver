@@ -28,4 +28,9 @@ public class DefaultClientNetworkEventHandler extends
 	public void onPingReceived(long ms) {
 		System.out.println("Ping: " + ms);
 	}
+
+	@Override
+	public void onConnectionEstablished(int clientId) {
+		System.out.println("Connection established. My client id: " + clientId);
+	}
 }

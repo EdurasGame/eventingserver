@@ -219,4 +219,11 @@ public class Client implements ClientInterface {
 		return socket.getPort();
 	}
 
+	void connectionEstablished(int id) {
+		if (networkEventHandler != null) {
+			networkEventHandler.onConnectionEstablished(id);
+		}
+
+	}
+
 }
