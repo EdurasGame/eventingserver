@@ -5,7 +5,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import de.eduras.eventingserver.exceptions.BufferIsEmptyException;
 
-
 /**
  * A Buffer is a thread-safe linked list of Strings. Elements are returned in
  * same order they where added.
@@ -42,7 +41,8 @@ public class Buffer {
 	 * @throws BufferIsEmptyException
 	 *             Thrown if list is empty.
 	 */
-	public String getNextIfAvailable() throws BufferIsEmptyException {
+	public synchronized String getNextIfAvailable()
+			throws BufferIsEmptyException {
 		try {
 			return list.poll();
 		} catch (NoSuchElementException e) {
@@ -74,10 +74,15 @@ public class Buffer {
 	 *            String to add.
 	 */
 	public void append(String string) {
-		try {
-			list.put(string);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+		synchronized (list) {
+
+			assert string != null : "It was tried to append a null string.";
+
+			try {
+				list.put(string);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -89,13 +94,21 @@ public class Buffer {
 	 * @throws BufferIsEmptyException
 	 *             Thrown if list is empty.
 	 */
-	public synchronized String[] getAll() throws BufferIsEmptyException {
-		if (list.size() == 0)
-			throw new BufferIsEmptyException();
-		String[] msgs = new String[list.size()];
-		list.toArray(msgs);
-		list.clear();
-		return msgs;
+	public String[] getAll() throws BufferIsEmptyException {
+		synchronized (list) {
+			if (list.size() == 0)
+				throw new BufferIsEmptyException();
+			String[] msgs = new String[list.size()];
+			list.toArray(msgs);
+			list.clear();
+
+			for (String singleMsg : msgs) {
+				assert singleMsg != null : "The string array contains a null string.";
+			}
+
+			return msgs;
+		}
+
 	}
 
 	/**
