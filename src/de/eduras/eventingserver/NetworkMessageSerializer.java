@@ -1,6 +1,7 @@
 package de.eduras.eventingserver;
 
 import java.util.LinkedList;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import de.eduras.eventingserver.exceptions.GivenParametersDoNotFitToEventException;
@@ -87,7 +88,8 @@ class NetworkMessageSerializer {
 							.parseObjectToString(argument);
 					type = "U";
 				} catch (IllegalArgumentException e) {
-					e.printStackTrace();
+					L.severe("Cannot parse user specific type: "
+							+ e.getMessage());
 					type = "";
 				}
 			}
@@ -140,7 +142,7 @@ class NetworkMessageSerializer {
 			} catch (InvalidMessageFormatException
 					| GivenParametersDoNotFitToEventException
 					| MessageNotSupportedException | IllegalArgumentException e) {
-				e.printStackTrace();
+				L.log(Level.SEVERE, "Cannot deserialize msg: " + msg, e);
 				continue;
 			}
 			events.add(event);
@@ -198,34 +200,45 @@ class NetworkMessageSerializer {
 			String objectStr = singleArgumentStr.substring(1);
 
 			Object argumentAsObject = null;
-			switch (type) {
-			case 'B':
-				argumentAsObject = Boolean.parseBoolean(objectStr);
-				break;
-			case 'I':
-				argumentAsObject = Integer.parseInt(objectStr);
-				break;
-			case 'S':
-				argumentAsObject = objectStr;
-				break;
-			case 'F':
-				argumentAsObject = Float.parseFloat(objectStr);
-				break;
-			case 'D':
-				argumentAsObject = Double.parseDouble(objectStr);
-				break;
-			case 'L':
-				argumentAsObject = Long.parseLong(objectStr);
-				break;
-			case 'A':
-				argumentAsObject = stringToByteArray(objectStr);
-				break;
-			case 'U':
-				argumentAsObject = userSpecificParser
-						.parseStringToObject(objectStr);
-				break;
-			default:
-				break;
+
+			try {
+				switch (type) {
+				case 'B':
+					argumentAsObject = Boolean.parseBoolean(objectStr);
+					break;
+				case 'I':
+					argumentAsObject = Integer.parseInt(objectStr);
+					break;
+				case 'S':
+					argumentAsObject = objectStr;
+					break;
+				case 'F':
+					argumentAsObject = Float.parseFloat(objectStr);
+					break;
+				case 'D':
+					argumentAsObject = Double.parseDouble(objectStr);
+					break;
+				case 'L':
+					argumentAsObject = Long.parseLong(objectStr);
+					break;
+				case 'A':
+					argumentAsObject = stringToByteArray(objectStr);
+					break;
+				case 'U':
+					argumentAsObject = userSpecificParser
+							.parseStringToObject(objectStr);
+					break;
+				default:
+					break;
+				}
+			} catch (IllegalArgumentException e) {
+				throw new IllegalArgumentException(
+						"When deserializing message \""
+								+ msg
+								+ "\""
+								+ " an argument cannot be read. The eventnumber is "
+								+ typeInt + ". Exception: \"" + e.getMessage()
+								+ "\"");
 			}
 
 			if (argumentAsObject == null) {

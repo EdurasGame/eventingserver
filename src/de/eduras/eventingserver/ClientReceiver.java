@@ -7,8 +7,11 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import de.eduras.eventingserver.exceptions.ConnectionLostException;
+import de.illonis.edulog.EduLog;
 
 /**
  * Receives incoming messages for the client.
@@ -17,6 +20,9 @@ import de.eduras.eventingserver.exceptions.ConnectionLostException;
  * 
  */
 class ClientReceiver extends Thread {
+
+	private final static Logger L = EduLog.getLoggerFor(ClientReceiver.class
+			.getName());
 
 	private BufferedReader messageReader = null;
 
@@ -47,18 +53,17 @@ class ClientReceiver extends Thread {
 			messageReader = new BufferedReader(new InputStreamReader(
 					socket.getInputStream()));
 		} catch (IOException e) {
-			// EduLog.passException(e);
-			e.printStackTrace();
+			L.log(Level.SEVERE,
+					"IOException appeared when initializing client.", e);
 		}
 
 		try {
 			udpSocket = new DatagramSocket(client.getLocalPortNumber());
 		} catch (SocketException e) {
 			connectionAvailable = false;
-			// EduLog.errorLF("Client.networking.udpopenerror",
-			// client.getPortNumber());
-			// EduLog.passException(e);
-			e.printStackTrace();
+			L.log(Level.SEVERE,
+					"SocketException appeared when opening UDP socket on client.",
+					e);
 			interrupt();
 			throw new ConnectionLostException();
 		}
@@ -86,15 +91,14 @@ class ClientReceiver extends Thread {
 			try {
 				String messages = messageReader.readLine();
 				if (messages != null) {
-					// EduLog.infoLF("Client.networking.msgreceive", messages);
+					L.finest("Received message via TCP: " + messages);
 					processMessages(messages);
 				}
 			} catch (IOException e) {
+				L.log(Level.SEVERE,
+						"IOException appeared when receiving TCP data on client.",
+						e);
 				connectionAvailable = false;
-				// EduLog.error("Client.networking.tcpclose");
-				// EduLog.errorL("Client.networking.tcpclose");
-				// EduLog.passException(e);
-				e.printStackTrace();
 				client.connectionLost();
 				interrupt();
 				return;
@@ -117,7 +121,7 @@ class ClientReceiver extends Thread {
 	 */
 	class UDPMessageReceiver extends Thread {
 
-		private static final int MAX_UDP_SIZE = 1024;
+		public static final int MAX_UDP_SIZE = 1024;
 
 		@Override
 		public void run() {
@@ -127,13 +131,21 @@ class ClientReceiver extends Thread {
 						new byte[MAX_UDP_SIZE], MAX_UDP_SIZE);
 				try {
 					udpSocket.receive(packet);
+
+					if (MAX_UDP_SIZE == packet.getLength()) {
+						L.warning("Received maximum size we can receive ("
+								+ MAX_UDP_SIZE
+								+ " bytes). Possibly had to drop bytes.");
+					}
+
 					String messages = new String(packet.getData(), 0,
 							packet.getLength());
 					processMessages(messages);
 				} catch (IOException e) {
+					L.log(Level.SEVERE,
+							"IOException appeared when receiving UDP data on client.",
+							e);
 					connectionAvailable = false;
-					// EduLog.errorL("Client.networking.udpclose");
-					// EduLog.passException(e);
 					client.connectionLost();
 					interrupt();
 					return;

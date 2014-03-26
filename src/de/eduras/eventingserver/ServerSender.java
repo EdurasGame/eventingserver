@@ -6,11 +6,13 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.SocketAddress;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 import de.eduras.eventingserver.Event.PacketType;
 import de.eduras.eventingserver.exceptions.BufferIsEmptyException;
 import de.eduras.eventingserver.exceptions.TooFewArgumentsExceptions;
 import de.eduras.eventingserver.test.NoSuchClientException;
+import de.illonis.edulog.EduLog;
 
 /**
  * A class that sends collected messages every {@value #SEND_INTERVAL} ms.
@@ -19,6 +21,9 @@ import de.eduras.eventingserver.test.NoSuchClientException;
  * 
  */
 class ServerSender extends Thread {
+
+	private final static Logger L = EduLog.getLoggerFor(ServerSender.class
+			.getName());
 
 	/**
 	 * Message send interval
@@ -79,8 +84,8 @@ class ServerSender extends Thread {
 			try {
 				server.serverReceiver.udpSocket.send(packet);
 			} catch (IOException e) {
-				// EduLog.passException(e);
-				e.printStackTrace();
+				L.severe("IOException when sending on udpsocket: "
+						+ e.getMessage());
 			}
 
 		}
@@ -92,7 +97,7 @@ class ServerSender extends Thread {
 			try {
 				sendMessageToClient(client.getClientId(), message, packetType);
 			} catch (NoSuchClientException e) {
-				e.printStackTrace();
+				// can't happen...
 				continue;
 			}
 		}
@@ -109,7 +114,7 @@ class ServerSender extends Thread {
 			try {
 				Thread.sleep(SEND_INTERVAL);
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				L.warning("Interrupted when sleeping :" + e.getMessage());
 			}
 		}
 	}
@@ -205,7 +210,8 @@ class ServerSender extends Thread {
 					sendAllMessages();
 				} catch (InterruptedException e) {
 					// gets interupted, when the client disconnects
-					e.printStackTrace();
+					L.warning("Got an interrupted exception when sending messages: "
+							+ e.getMessage());
 					break;
 				}
 			}
@@ -283,10 +289,9 @@ class ServerSender extends Thread {
 						messageAsBytes.length, clientAddress);
 				server.serverReceiver.udpSocket.send(packet);
 			} catch (IOException e) {
-				e.printStackTrace();
+				L.severe("IOException when sending udp message: "
+						+ e.getMessage());
 			}
-
-			// EduLog.info("Server.networking.msgsend");
 		}
 
 	}

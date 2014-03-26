@@ -2,12 +2,18 @@ package de.eduras.eventingserver;
 
 import java.net.SocketAddress;
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import de.eduras.eventingserver.Event.PacketType;
 import de.eduras.eventingserver.exceptions.ConnectionLostException;
 import de.eduras.eventingserver.utils.Pair;
+import de.illonis.edulog.EduLog;
 
 class InternalMessageHandler {
+
+	private final static Logger L = EduLog
+			.getLoggerFor(InternalMessageHandler.class.getName());
 
 	private static final String CONNECTION_ESTABLISHED = "CONNECTION_ESTABLISHED";
 	private static final String UDP_HI = "UDP_HI";
@@ -93,7 +99,9 @@ class InternalMessageHandler {
 					client.setUdpAddress((SocketAddress) someArgument);
 					client.setUdpSetUp(true);
 				} catch (Exception e) {
-					e.printStackTrace();
+					L.log(Level.WARNING,
+							"Exception occured handling internal server messages.",
+							e);
 					continue;
 				}
 			}
@@ -115,7 +123,8 @@ class InternalMessageHandler {
 							PacketType.TCP);
 
 				} catch (Exception e) {
-					e.printStackTrace();
+					L.log(Level.WARNING,
+							"Exception when sending message to client.", e);
 					continue;
 				}
 			}
@@ -139,7 +148,9 @@ class InternalMessageHandler {
 									.internalMessageGetArgument(
 											internalMessage, 1));
 				} catch (Exception e) {
-					e.printStackTrace();
+					L.log(Level.WARNING,
+							"Exception when handling interal messsages of client.",
+							e);
 					continue;
 				}
 				client.networkEventHandler.onPingReceived(latency);
@@ -152,10 +163,12 @@ class InternalMessageHandler {
 									.internalMessageGetArgument(
 											internalMessage, 0)));
 				} catch (NumberFormatException e) {
-					e.printStackTrace();
+					L.severe(e.getMessage());
 					continue;
 				} catch (Exception e) {
-					e.printStackTrace();
+					L.log(Level.SEVERE,
+							"Exception occuren when handling internal messages in client.",
+							e);
 					continue;
 				}
 			}
@@ -167,10 +180,12 @@ class InternalMessageHandler {
 									.internalMessageGetArgument(
 											internalMessage, 0)));
 				} catch (NumberFormatException e) {
-					e.printStackTrace();
+					L.severe(e.getMessage());
 					continue;
 				} catch (Exception e) {
-					e.printStackTrace();
+					L.log(Level.SEVERE,
+							"Exception occuren when handling internal messages in client.",
+							e);
 					continue;
 				}
 			}
@@ -185,10 +200,12 @@ class InternalMessageHandler {
 									.internalMessageGetArgument(
 											internalMessage, 1));
 				} catch (NumberFormatException e) {
-					e.printStackTrace();
+					L.severe(e.getMessage());
 					continue;
 				} catch (Exception e) {
-					e.printStackTrace();
+					L.log(Level.SEVERE,
+							"Exception occuren when handling internal messages in client.",
+							e);
 					continue;
 				}
 			}
@@ -204,10 +221,12 @@ class InternalMessageHandler {
 					client.setOwnerId(Integer.parseInt(NetworkMessageSerializer
 							.internalMessageGetArgument(internalMessage, 0)));
 				} catch (NumberFormatException e) {
-					e.printStackTrace();
+					L.severe(e.getMessage());
 					continue;
 				} catch (Exception e) {
-					e.printStackTrace();
+					L.log(Level.SEVERE,
+							"Exception occuren when handling internal messages in client.",
+							e);
 					continue;
 				}
 				class UDPInitializer extends Thread {
@@ -227,7 +246,8 @@ class InternalMessageHandler {
 							try {
 								Thread.sleep(1000);
 							} catch (InterruptedException e) {
-								e.printStackTrace();
+								L.log(Level.WARNING,
+										"Interrupted when sleeping.", e);
 								return;
 							}
 						}

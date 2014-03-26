@@ -6,9 +6,12 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import de.eduras.eventingserver.Event.PacketType;
 import de.eduras.eventingserver.exceptions.ConnectionLostException;
+import de.illonis.edulog.EduLog;
 
 /**
  * Sends messages/events to the server.
@@ -17,6 +20,9 @@ import de.eduras.eventingserver.exceptions.ConnectionLostException;
  * 
  */
 class ClientSender {
+
+	private final static Logger L = EduLog.getLoggerFor(ClientSender.class
+			.getName());
 
 	private Socket socket = null;
 	private boolean active;
@@ -40,8 +46,7 @@ class ClientSender {
 					true);
 		} catch (IOException e) {
 			active = false;
-			// EduLog.passException(e);
-			e.printStackTrace();
+			L.log(Level.SEVERE, "IOException when initializing PrintWriter.", e);
 		}
 	}
 

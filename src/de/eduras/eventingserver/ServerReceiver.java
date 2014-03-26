@@ -6,10 +6,16 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import de.eduras.eventingserver.utils.Pair;
+import de.illonis.edulog.EduLog;
 
 class ServerReceiver {
+
+	private final static Logger L = EduLog.getLoggerFor(ServerReceiver.class
+			.getName());
 
 	HashMap<Integer, ServerTCPReceiver> serverTCPReceivers;
 	UDPMessageReceiver serverUDPReceiver;
@@ -47,7 +53,8 @@ class ServerReceiver {
 			try {
 				udpSocket = new DatagramSocket(server.getPort());
 			} catch (SocketException e) {
-				e.printStackTrace();
+				L.severe("Error when opening DatagramSocket on ServerReceiver: "
+						+ e.getMessage());
 				server.stop();
 			}
 
@@ -72,9 +79,13 @@ class ServerReceiver {
 				} catch (IOException e) {
 					server.stop();
 				} catch (NumberFormatException e) {
-					e.printStackTrace();
+					L.severe(e.getMessage());
+					continue;
 				} catch (Exception e) {
-					e.printStackTrace();
+					L.log(Level.SEVERE,
+							"Exception occuren when handling internal messages in client.",
+							e);
+					continue;
 				}
 			}
 		}

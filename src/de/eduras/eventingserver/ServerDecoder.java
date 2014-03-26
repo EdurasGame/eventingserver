@@ -1,8 +1,10 @@
 package de.eduras.eventingserver;
 
 import java.util.LinkedList;
+import java.util.logging.Logger;
 
 import de.eduras.eventingserver.utils.Pair;
+import de.illonis.edulog.EduLog;
 
 /**
  * {@link ServerDecoder} is used to handle received messages from clients that
@@ -13,6 +15,9 @@ import de.eduras.eventingserver.utils.Pair;
  * 
  */
 class ServerDecoder extends Thread {
+
+	private final static Logger L = EduLog.getLoggerFor(ServerDecoder.class
+			.getName());
 
 	private final Buffer inputBuffer;
 	private final Server server;
@@ -51,8 +56,7 @@ class ServerDecoder extends Thread {
 				String s = inputBuffer.getNext();
 				decodeMessage(s);
 			} catch (InterruptedException e) {
-				// EduLog.passException(e);
-				e.printStackTrace();
+				L.severe("Interrupted when reading buffer: " + e.getMessage());
 			}
 		}
 	}

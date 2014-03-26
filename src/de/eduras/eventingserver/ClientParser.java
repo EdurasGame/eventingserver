@@ -1,8 +1,11 @@
 package de.eduras.eventingserver;
 
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import de.eduras.eventingserver.utils.Pair;
+import de.illonis.edulog.EduLog;
 
 /**
  * Processes messages that arrive at the client.
@@ -13,6 +16,9 @@ import de.eduras.eventingserver.utils.Pair;
  *         the gamelogic or to the network listener.
  */
 class ClientParser extends Thread {
+
+	private final static Logger L = EduLog.getLoggerFor(ClientParser.class
+			.getName());
 
 	Client client;
 	private final Buffer inputBuffer;
@@ -51,7 +57,7 @@ class ClientParser extends Thread {
 				decodeMessage(s);
 			} catch (InterruptedException e) {
 				// EduLog.info("ClientParser interrupted.");
-				e.printStackTrace();
+				L.log(Level.WARNING, "Interrupted when reading buffer.", e);
 				client.connectionLost();
 				break;
 			}
@@ -67,6 +73,8 @@ class ClientParser extends Thread {
 	private void decodeMessage(String message) {
 		if (message.isEmpty())
 			return;
+
+		L.fine("Decoding message: " + message);
 
 		Pair<LinkedList<String>, String> internalAndEvents = InternalMessageHandler
 				.extractInternalMessage(message);

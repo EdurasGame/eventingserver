@@ -2,8 +2,11 @@ package de.eduras.eventingserver;
 
 import java.util.NoSuchElementException;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import de.eduras.eventingserver.exceptions.BufferIsEmptyException;
+import de.illonis.edulog.EduLog;
 
 /**
  * A Buffer is a thread-safe linked list of Strings. Elements are returned in
@@ -13,6 +16,8 @@ import de.eduras.eventingserver.exceptions.BufferIsEmptyException;
  * 
  */
 public class Buffer {
+
+	private final static Logger L = EduLog.getLoggerFor(Buffer.class.getName());
 
 	/**
 	 * <b>Depreciated:</b> Do not use this object anymore as it can produce
@@ -81,7 +86,7 @@ public class Buffer {
 			try {
 				list.put(string);
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				L.log(Level.WARNING, "Interrupted when appending string.", e);
 			}
 		}
 	}

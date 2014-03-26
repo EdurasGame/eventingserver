@@ -6,10 +6,13 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import de.eduras.eventingserver.Event.PacketType;
 import de.eduras.eventingserver.exceptions.TooFewArgumentsExceptions;
 import de.eduras.eventingserver.test.NoSuchClientException;
+import de.illonis.edulog.EduLog;
 
 /**
  * A server that handles a game and its clients.
@@ -25,6 +28,8 @@ import de.eduras.eventingserver.test.NoSuchClientException;
  * @author illonis
  */
 public class Server implements ServerInterface {
+
+	private final static Logger L = EduLog.getLoggerFor(Server.class.getName());
 
 	private int port;
 	private String name;
@@ -89,7 +94,6 @@ public class Server implements ServerInterface {
 									.getClientId()), PacketType.TCP);
 		} catch (NoSuchClientException e) {
 			// can not happen
-			e.printStackTrace();
 			return;
 		}
 
@@ -112,7 +116,8 @@ public class Server implements ServerInterface {
 					true);
 			pw.println(InternalMessageHandler.createServerFullMessage());
 		} catch (IOException e) {
-			e.printStackTrace();
+			L.log(Level.SEVERE,
+					"IOException when trying to send a serverfull exception", e);
 		}
 
 	}
@@ -144,7 +149,8 @@ public class Server implements ServerInterface {
 					client = serverSocket.accept();
 					handleConnection(client);
 				} catch (IOException e) {
-					e.printStackTrace();
+					L.severe("IOException when accepting client: "
+							+ e.getMessage());
 					return;
 				}
 			}
@@ -189,7 +195,8 @@ public class Server implements ServerInterface {
 		try {
 			client.closeConnection();
 		} catch (IOException e) {
-			e.printStackTrace();
+			L.warning("Error when closing connection to client: "
+					+ e.getMessage());
 		}
 
 		// inform clients
@@ -345,7 +352,7 @@ public class Server implements ServerInterface {
 		try {
 			client = getClientById(clientId);
 		} catch (NoSuchClientException e) {
-			e.printStackTrace();
+			L.warning("Cannot find client: " + e.getMessage());
 			return false;
 		}
 		kickClient(client, reason);

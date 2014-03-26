@@ -4,10 +4,13 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import de.eduras.eventingserver.Event.PacketType;
 import de.eduras.eventingserver.exceptions.ConnectionLostException;
 import de.eduras.eventingserver.exceptions.TooFewArgumentsExceptions;
+import de.illonis.edulog.EduLog;
 
 /**
  * A client that connects to the game server and starts receiving and sending
@@ -17,6 +20,8 @@ import de.eduras.eventingserver.exceptions.TooFewArgumentsExceptions;
  * 
  */
 public class Client implements ClientInterface {
+
+	private final static Logger L = EduLog.getLoggerFor(Client.class.getName());
 
 	/**
 	 * Connection timeout when connecting to server (in ms).
@@ -57,19 +62,24 @@ public class Client implements ClientInterface {
 	public boolean connect(String hostAddress, int port) {
 		// EduLog.info("[CLIENT] Connecting to " + hostAddress.toString() +
 		// " at " + port);
+		L.info("[CLIENT] Connecting to " + hostAddress.toString() + " at "
+				+ port);
 		socket = new Socket();
 		InetSocketAddress iaddr = new InetSocketAddress(hostAddress, port);
 		try {
 			socket.connect(iaddr, CONNECT_TIMEOUT);
 		} catch (IOException e) {
-			e.printStackTrace();
+			L.log(Level.SEVERE, "Cannot connect to server " + hostAddress + ":"
+					+ port, e);
 			return false;
 		}
 		connected = true;
 		try {
 			receiver = new ClientReceiver(socket, this);
 		} catch (ConnectionLostException e) {
-			e.printStackTrace();
+			L.log(Level.SEVERE,
+					"ConnectionLostException when initializing ClientReceiver.",
+					e);
 			networkEventHandler.onConnectionLost();
 		}
 		receiver.start();
@@ -144,8 +154,7 @@ public class Client implements ClientInterface {
 		try {
 			socket.close();
 		} catch (IOException e) {
-			// EduLog.passException(e);
-			e.printStackTrace();
+			L.log(Level.WARNING, "IOException when closing socket.", e);
 			return false;
 		}
 
@@ -205,7 +214,7 @@ public class Client implements ClientInterface {
 					InternalMessageHandler.createPingMessage(clientId,
 							System.currentTimeMillis()), PacketType.TCP);
 		} catch (ConnectionLostException e) {
-			e.printStackTrace();
+			L.log(Level.SEVERE, "Lost connection when sending a ping.", e);
 		}
 	}
 
