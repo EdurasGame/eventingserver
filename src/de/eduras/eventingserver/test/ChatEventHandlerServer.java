@@ -9,6 +9,7 @@ public class ChatEventHandlerServer implements EventHandler {
 
 	public static final int MESSAGE_SENT_EVENT = 10;
 	public static final int DELAY_PLS = 11;
+	public static final int MASS_UDP = 12;
 	ServerInterface server;
 
 	public ChatEventHandlerServer(ServerInterface server) {

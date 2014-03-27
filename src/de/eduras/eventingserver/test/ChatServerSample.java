@@ -5,9 +5,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.logging.Level;
 
+import de.eduras.eventingserver.Event;
 import de.eduras.eventingserver.Server;
 import de.eduras.eventingserver.ServerInterface;
+import de.eduras.eventingserver.exceptions.TooFewArgumentsExceptions;
 import de.illonis.edulog.EduLog;
 
 public class ChatServerSample {
@@ -20,6 +23,8 @@ public class ChatServerSample {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
+		EduLog.setConsoleLogLimit(Level.SEVERE);
 
 		ServerInterface server = new Server();
 		server.setEventHandler(new ChatEventHandlerServer(server));
@@ -61,6 +66,39 @@ public class ChatServerSample {
 					System.out.println("/stop");
 					System.out.println("/clients");
 					System.out.println("/kick <clientId>");
+				}
+				if (userInput.equals("/udpdata")) {
+
+					for (int i = 0; i < 50; i++) {
+						Event massUdpData = new Event(
+								ChatEventHandlerServer.MASS_UDP);
+						String spamString = i
+								+ "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+								+ i;
+						massUdpData.putArgument(spamString);
+
+						Event massUdpData2 = new Event(
+								ChatEventHandlerServer.MASS_UDP);
+						massUdpData2.putArgument(i
+								+ "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" + i);
+
+						Event massUdpData3 = new Event(
+								ChatEventHandlerServer.MASS_UDP);
+						massUdpData3
+								.putArgument(i
+										+ "cccccccccccccccccccccccccccccccccccccccccccc"
+										+ i);
+
+						try {
+							server.sendEventToAll(massUdpData);
+							server.sendEventToAll(massUdpData2);
+							server.sendEventToAll(massUdpData3);
+						} catch (IllegalArgumentException
+								| TooFewArgumentsExceptions e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
 				}
 
 			} else {

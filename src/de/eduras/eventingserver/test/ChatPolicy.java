@@ -11,6 +11,9 @@ public class ChatPolicy extends NetworkPolicy {
 		switch (event.getEventNumber()) {
 		case ChatEventHandlerServer.DELAY_PLS:
 			return PacketType.UDP;
+		case ChatEventHandlerServer.MASS_UDP:
+			return PacketType.UDP;
+
 		}
 		return PacketType.TCP;
 	}

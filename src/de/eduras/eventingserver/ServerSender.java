@@ -283,17 +283,17 @@ class ServerSender extends Thread {
 			if (!client.isUdpSetUp())
 				return;
 			SocketAddress clientAddress = client.getUdpAddress();
-			byte[] messageAsBytes = message.getBytes();
+
 			try {
-				DatagramPacket packet = new DatagramPacket(messageAsBytes,
-						messageAsBytes.length, clientAddress);
-				server.serverReceiver.udpSocket.send(packet);
+				NetworkUtilities.sendAllDataInPacketsOfMaxSize(
+						server.serverReceiver.udpSocket, message,
+						ClientReceiver.UDPMessageReceiver.MAX_UDP_SIZE,
+						clientAddress, new SplitByLastFullMessagePolicy());
 			} catch (IOException e) {
 				L.severe("IOException when sending udp message: "
 						+ e.getMessage());
 			}
 		}
-
 	}
 
 	public void removeClient(int clientId) {

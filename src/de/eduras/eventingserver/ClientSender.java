@@ -2,7 +2,6 @@ package de.eduras.eventingserver;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -76,15 +75,16 @@ class ClientSender {
 				}
 				break;
 			case UDP:
-				byte[] data = message.getBytes();
 				InetSocketAddress address = new InetSocketAddress(
 						socket.getInetAddress(), socket.getPort());
-				DatagramPacket udpPacket;
+
 				try {
-					udpPacket = new DatagramPacket(data, data.length, address);
-					udpSocket.send(udpPacket);
+					NetworkUtilities.sendAllDataInPacketsOfMaxSize(udpSocket,
+							message,
+							ClientReceiver.UDPMessageReceiver.MAX_UDP_SIZE,
+							address, new SplitByLastFullMessagePolicy());
+
 				} catch (IOException e) {
-					// EduLog.passException(e);
 					active = false;
 					close();
 					throw new ConnectionLostException();

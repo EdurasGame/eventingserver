@@ -132,12 +132,6 @@ class ClientReceiver extends Thread {
 				try {
 					udpSocket.receive(packet);
 
-					if (MAX_UDP_SIZE == packet.getLength()) {
-						L.warning("Received maximum size we can receive ("
-								+ MAX_UDP_SIZE
-								+ " bytes). Possibly had to drop bytes.");
-					}
-
 					String messages = new String(packet.getData(), 0,
 							packet.getLength());
 					processMessages(messages);

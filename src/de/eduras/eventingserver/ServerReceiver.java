@@ -42,8 +42,6 @@ class ServerReceiver {
 	 */
 	class UDPMessageReceiver extends Thread {
 
-		private static final int MAX_UDP_SIZE = 1024;
-
 		public UDPMessageReceiver() {
 			super("UDPMessageReceiver");
 		}
@@ -60,7 +58,8 @@ class ServerReceiver {
 
 			while (server.running) {
 				DatagramPacket packet = new DatagramPacket(
-						new byte[MAX_UDP_SIZE], MAX_UDP_SIZE);
+						new byte[ClientReceiver.UDPMessageReceiver.MAX_UDP_SIZE],
+						ClientReceiver.UDPMessageReceiver.MAX_UDP_SIZE);
 				try {
 					udpSocket.receive(packet);
 					String messages = new String(packet.getData(), 0,
