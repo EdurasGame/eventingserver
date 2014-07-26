@@ -30,7 +30,7 @@ class ClientReceiver extends Thread {
 
 	private final Client client;
 	private final Buffer inputBuffer;
-	private ClientParser p;
+	private ClientParser clientParser;
 
 	private DatagramSocket udpSocket;
 
@@ -81,8 +81,8 @@ class ClientReceiver extends Thread {
 
 	@Override
 	public void run() {
-		p = new ClientParser(inputBuffer, client);
-		p.start();
+		clientParser = new ClientParser(inputBuffer, client);
+		clientParser.start();
 
 		UDPMessageReceiver udpMessageReceiver = new UDPMessageReceiver();
 		udpMessageReceiver.start();
@@ -108,8 +108,8 @@ class ClientReceiver extends Thread {
 
 	@Override
 	public void interrupt() {
-		if (p != null)
-			p.interrupt();
+		if (clientParser != null)
+			clientParser.interrupt();
 		super.interrupt();
 	}
 
@@ -122,6 +122,10 @@ class ClientReceiver extends Thread {
 	class UDPMessageReceiver extends Thread {
 
 		public static final int MAX_UDP_SIZE = 1024;
+
+		public UDPMessageReceiver() {
+			setName("UDPMessageReceiver for #" + client.getClientId());
+		}
 
 		@Override
 		public void run() {
