@@ -26,11 +26,10 @@ class ClientReceiver extends Thread {
 
 	private BufferedReader messageReader = null;
 
-	private boolean connectionAvailable = true;
-
 	private final Client client;
 	private final Buffer inputBuffer;
 	private ClientParser clientParser;
+	private UDPMessageReceiver udpMessageReceiver;
 
 	private DatagramSocket udpSocket;
 
@@ -60,7 +59,6 @@ class ClientReceiver extends Thread {
 		try {
 			udpSocket = new DatagramSocket(client.getLocalPortNumber());
 		} catch (SocketException e) {
-			connectionAvailable = false;
 			L.log(Level.SEVERE,
 					"SocketException appeared when opening UDP socket on client.",
 					e);
@@ -84,10 +82,10 @@ class ClientReceiver extends Thread {
 		clientParser = new ClientParser(inputBuffer, client);
 		clientParser.start();
 
-		UDPMessageReceiver udpMessageReceiver = new UDPMessageReceiver();
+		udpMessageReceiver = new UDPMessageReceiver();
 		udpMessageReceiver.start();
 
-		while (connectionAvailable) {
+		while (!interrupted()) {
 			try {
 				String messages = messageReader.readLine();
 				if (messages != null) {
@@ -98,7 +96,6 @@ class ClientReceiver extends Thread {
 				L.log(Level.SEVERE,
 						"IOException appeared when receiving TCP data on client.",
 						e);
-				connectionAvailable = false;
 				client.connectionLost();
 				interrupt();
 				return;
@@ -108,8 +105,12 @@ class ClientReceiver extends Thread {
 
 	@Override
 	public void interrupt() {
-		if (clientParser != null)
+		if (clientParser != null) {
 			clientParser.interrupt();
+		}
+		if (udpMessageReceiver != null) {
+			udpMessageReceiver.interrupt();
+		}
 		super.interrupt();
 	}
 
@@ -130,7 +131,7 @@ class ClientReceiver extends Thread {
 		@Override
 		public void run() {
 
-			while (connectionAvailable) {
+			while (!interrupted()) {
 				DatagramPacket packet = new DatagramPacket(
 						new byte[MAX_UDP_SIZE], MAX_UDP_SIZE);
 				try {
@@ -143,12 +144,17 @@ class ClientReceiver extends Thread {
 					L.log(Level.SEVERE,
 							"IOException appeared when receiving UDP data on client.",
 							e);
-					connectionAvailable = false;
 					client.connectionLost();
 					interrupt();
 					return;
 				}
 			}
+			udpSocket.close();
+		}
+
+		@Override
+		public void interrupt() {
+			super.interrupt();
 			udpSocket.close();
 		}
 	}
