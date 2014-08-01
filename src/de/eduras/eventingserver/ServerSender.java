@@ -53,7 +53,9 @@ class ServerSender extends Thread {
 	void addClient(ServerClient client) {
 		BufferSenderForClient newBufferSender = new BufferSenderForClient(
 				client);
-		bufferSenders.put(client.getClientId(), newBufferSender);
+		synchronized (bufferSenders) {
+			bufferSenders.put(client.getClientId(), newBufferSender);
+		}
 		newBufferSender.start();
 	}
 
@@ -106,9 +108,12 @@ class ServerSender extends Thread {
 	@Override
 	public void run() {
 		while (server.running) {
-			for (BufferSenderForClient bufferSender : bufferSenders.values()) {
-				synchronized (bufferSender) {
-					bufferSender.notify();
+			synchronized (bufferSenders) {
+				for (BufferSenderForClient bufferSender : bufferSenders
+						.values()) {
+					synchronized (bufferSender) {
+						bufferSender.notify();
+					}
 				}
 			}
 			try {
@@ -133,14 +138,16 @@ class ServerSender extends Thread {
 		String eventAsString;
 		eventAsString = NetworkMessageSerializer.serializeEvent(event);
 
-		for (BufferSenderForClient bufferSender : bufferSenders.values()) {
+		synchronized (bufferSenders) {
+			for (BufferSenderForClient bufferSender : bufferSenders.values()) {
 
-			if (networkPolicy.determinePacketType(event) == PacketType.TCP) {
-				bufferSender.appendToTCPBuffer(eventAsString);
-			} else {
-				bufferSender.appendToUDPBuffer(eventAsString);
+				if (networkPolicy.determinePacketType(event) == PacketType.TCP) {
+					bufferSender.appendToTCPBuffer(eventAsString);
+				} else {
+					bufferSender.appendToUDPBuffer(eventAsString);
+				}
+
 			}
-
 		}
 	}
 
