@@ -80,7 +80,9 @@ public class Client implements ClientInterface {
 			L.log(Level.SEVERE,
 					"ConnectionLostException when initializing ClientReceiver.",
 					e);
+			disconnect();
 			networkEventHandler.onConnectionLost();
+			return false;
 		}
 		receiver.start();
 		sender = new ClientSender(socket);
@@ -143,16 +145,20 @@ public class Client implements ClientInterface {
 	 */
 	@Override
 	public boolean disconnect() {
-		if (receiver == null || socket == null)
+		if (receiver == null && socket == null)
 			return false;
 
 		if (networkEventHandler != null)
 			networkEventHandler.onDisconnected();
 
-		receiver.interrupt();
+		if (receiver != null) {
+			receiver.interrupt();
+		}
 
 		try {
-			socket.close();
+			if (socket != null) {
+				socket.close();
+			}
 		} catch (IOException e) {
 			L.log(Level.WARNING, "IOException when closing socket.", e);
 			return false;
