@@ -49,6 +49,11 @@ class NetworkMessageSerializer {
 				argumentString = argument.toString();
 			}
 
+			if (argument instanceof Enum) {
+				type += "E";
+				argumentString = argument.toString();
+			}
+
 			if (argument instanceof Double) {
 				type += "D";
 				argumentString = argument.toString();
@@ -220,6 +225,9 @@ class NetworkMessageSerializer {
 					break;
 				case 'L':
 					argumentAsObject = Long.parseLong(objectStr);
+					break;
+				case 'E':
+					argumentAsObject = objectStr;
 					break;
 				case 'A':
 					argumentAsObject = stringToByteArray(objectStr);
