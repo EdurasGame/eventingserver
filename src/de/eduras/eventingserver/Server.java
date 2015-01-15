@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -38,7 +38,7 @@ public class Server implements ServerInterface {
 	ServerSender serverSender;
 	ServerReceiver serverReceiver;
 	ServerDecoder decoder;
-	final HashMap<Integer, ServerClient> clients;
+	final ConcurrentHashMap<Integer, ServerClient> clients;
 	boolean running;
 	InternalMessageHandler internalMessageHandler;
 	ServerNetworkEventHandler networkEventHandler;
@@ -58,7 +58,7 @@ public class Server implements ServerInterface {
 		name = "Unknown";
 		serverReceiver = new ServerReceiver(this);
 		serverSender = new ServerSender(this);
-		clients = new HashMap<Integer, ServerClient>();
+		clients = new ConcurrentHashMap<Integer, ServerClient>();
 		decoder = new ServerDecoder(serverReceiver.inputBuffer, this);
 		networkEventHandler = new DefaultServerNetworkEventHandler();
 		maxClients = 5;

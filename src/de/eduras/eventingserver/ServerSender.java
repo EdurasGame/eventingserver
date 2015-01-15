@@ -304,7 +304,9 @@ class ServerSender extends Thread {
 	}
 
 	public void removeClient(int clientId) {
-		bufferSenders.get(clientId).interrupt();
-		bufferSenders.remove(clientId);
+		synchronized (bufferSenders) {
+			bufferSenders.get(clientId).interrupt();
+			bufferSenders.remove(clientId);
+		}
 	}
 }
