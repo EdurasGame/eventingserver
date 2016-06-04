@@ -50,11 +50,11 @@ In this example, we develop a simple chat. When a user types in a message, the m
         public static final int MESSAGE_SENT_EVENT = 10;
         public static final int DELAY_PLS = 11;
         ServerInterface server;
-    
+
         public ChatEventHandlerServer(ServerInterface server) {
             this.server = server;
         }
-    
+
         @Override
         public void handleEvent(Event event) {
             switch (event.getEventNumber()) {
@@ -98,10 +98,10 @@ In this example, we develop a simple chat. When a user types in a message, the m
         }
     }
 
-                
+
 As you can see, the server may either send an event to all clients (as done with the chat message) or only to a specific one (as done for the DELAY_PLS message). Lets write the client's event handler next.
 
-                
+
     import de.eduras.eventingserver.ClientInterface;
     import de.eduras.eventingserver.Event;
     import de.eduras.eventingserver.EventHandler;
@@ -110,16 +110,16 @@ As you can see, the server may either send an event to all clients (as done with
     public class ChatEventHandlerClient implements EventHandler {
 
         ClientInterface client;
-    
+
         public ChatEventHandlerClient(ClientInterface client) {
             this.client = client;
         }
-    
+
         @Override
         public void handleEvent(Event event) {
-    
+
             switch (event.getEventNumber()) {
-    
+
             case ChatEventHandlerServer.MESSAGE_SENT_EVENT:
                 String clientName = "";
                 String message = "";
@@ -129,7 +129,7 @@ As you can see, the server may either send an event to all clients (as done with
                 } catch (TooFewArgumentsExceptions e) {
                     e.printStackTrace();
                 }
-    
+
                 System.out.println(clientName + ": " + message);
                 break;
             case ChatEventHandlerServer.DELAY_PLS:
@@ -140,16 +140,16 @@ As you can see, the server may either send an event to all clients (as done with
                 } catch (TooFewArgumentsExceptions e) {
                     e.printStackTrace();
                 }
-    
+
             }
-    
+
         }
     }
 
-                
+
 
 When the DELAY_PLS message arrives at the client, we can roughly estimate the latency by computing the time difference. Since we are of course always looking to provide the best possible user experience (/irony off), we want to give the user feedback when they connect or disconnect or some other network event appears.
-                
+
     package de.eduras.eventingserver.test;
 
     import de.eduras.eventingserver.ClientNetworkEventHandler;
@@ -160,41 +160,41 @@ When the DELAY_PLS message arrives at the client, we can roughly estimate the la
         public void onConnectionLost() {
             System.out.println("You lost the connection.");
         }
-    
+
         @Override
         public void onDisconnected() {
             System.out.println("You disconnected.");
-    
+
         }
-    
+
         @Override
         public void onClientDisconnected(int clientId) {
             System.out.println("Client with id #" + clientId + " disconnected.");
-    
+
         }
-    
+
         @Override
         public void onClientConnected(int clientId) {
             System.out.println("Client with id #" + clientId + " connected.");
-    
+
         }
-    
+
         @Override
         public void onClientKicked(int clientId, String reason) {
             System.out.println("You were kicked because " + reason);
         }
-    
+
         @Override
         public void onServerIsFull() {
             System.out.println("Cannot connect because server is full.");
         }
-    
+
         @Override
         public void onPingReceived(long latency) {
             System.out.println("The ping is " + latency + "ms");
-    
+
         }
-    
+
         @Override
         public void onConnectionEstablished(int clientId) {
             System.out.println("My connection was established! My clientId is : "
@@ -202,18 +202,18 @@ When the DELAY_PLS message arrives at the client, we can roughly estimate the la
         }
     }
 
-                
+
 
 Before we can get started, we need to define the policy that determines which Events are sent via UDP and which are sent via TCP:
 
     package de.eduras.eventingserver.test;
-    
+
     import de.eduras.eventingserver.Event;
     import de.eduras.eventingserver.Event.PacketType;
     import de.eduras.eventingserver.NetworkPolicy;
-    
+
     public class ChatPolicy extends NetworkPolicy {
-    
+
         @Override
         public PacketType determinePacketType(Event event) {
             if (event.getEventNumber() == ChatEventHandlerServer.DELAY_PLS) {
@@ -221,12 +221,12 @@ Before we can get started, we need to define the policy that determines which Ev
             } else {
                 return PacketType.TCP;
             }
-            
+
         }
 
     }
-                
-                
+
+
 Even though it might not necessarily make sense to define the DELAY_PLS event as latency event, we do it for the sake of the example. Now we are ready to start the server:
 
     import java.io.BufferedReader;
@@ -235,38 +235,38 @@ Even though it might not necessarily make sense to define the DELAY_PLS event as
     import java.text.SimpleDateFormat;
     import java.util.Date;
     import java.util.logging.Level;
-    
+
     import de.eduras.eventingserver.Event;
     import de.eduras.eventingserver.Server;
     import de.eduras.eventingserver.ServerInterface;
     import de.eduras.eventingserver.exceptions.TooFewArgumentsExceptions;
     import de.illonis.edulog.EduLog;
-    
+
     public class ChatServerSample {
 
         public static void main(String[] args) {
             SimpleDateFormat simpleDate = new SimpleDateFormat("y-M-d-H-m-s");
-    
+
             try {
                 EduLog.init(simpleDate.format(new Date()) + "-server.log", 2097152);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-    
+
             EduLog.setConsoleLogLimit(Level.SEVERE);
-    
+
             ServerInterface server = new Server();
             server.setEventHandler(new ChatEventHandlerServer(server));
             server.setPolicy(new ChatPolicy());
             server.start("Chatserver", 6666);
-    
+
             BufferedReader userInputReader = new BufferedReader(
                     new InputStreamReader(System.in));
             boolean running = true;
             while (running) {
-    
+
                 System.out.println("Give a command:");
-    
+
                 String userInput;
                 try {
                     userInput = userInputReader.readLine();
@@ -274,7 +274,7 @@ Even though it might not necessarily make sense to define the DELAY_PLS event as
                     e.printStackTrace();
                     continue;
                 }
-    
+
                 if (userInput.startsWith("/")) {
                     if (userInput.equals("/stop")) {
                         System.out.println("Stopping Chatserver...");
@@ -296,17 +296,17 @@ Even though it might not necessarily make sense to define the DELAY_PLS event as
                         System.out.println("/clients");
                         System.out.println("/kick <clientId>");
                     }
-    
+
                     else {
                         System.out
                            .println("This is not a command. Type /help to see commands.");
                 }
             }
-    
+
             server.stop();
         }
     }
-    
+
 As you can see, all you have to do is create a new instance, set it up with the EventHandler and policy defined before, and start it. Additionally, we want to give the chat-server administrator the ability to stop the server, see all clients connected and remove clients when needed. These features are already implemented with the library. We conclude with the client side:
 
     import java.io.BufferedReader;
@@ -314,13 +314,13 @@ As you can see, all you have to do is create a new instance, set it up with the 
     import java.io.InputStreamReader;
     import java.text.SimpleDateFormat;
     import java.util.Date;
-    
+
     import de.eduras.eventingserver.Client;
     import de.eduras.eventingserver.ClientInterface;
     import de.eduras.eventingserver.Event;
     import de.eduras.eventingserver.exceptions.TooFewArgumentsExceptions;
     import de.illonis.edulog.EduLog;
-    
+
     public class ChatClient {
         public static void main(String[] args) {
             SimpleDateFormat simpleDate = new SimpleDateFormat("y-M-d-H-m-s");
@@ -330,16 +330,16 @@ As you can see, all you have to do is create a new instance, set it up with the 
             } catch (IOException e) {
                 e.printStackTrace();
             }
-    
+
             ClientInterface client = new Client();
             client.setEventHandler(new ChatEventHandlerClient(client));
             client.setNetworkPolicy(new ChatPolicy());
             client.setNetworkEventHandler(new ChatNetworkEventHandlerClient())
             client.connect("localhost", 6666);
-    
+
             BufferedReader userInputReader = new BufferedReader(
                     new InputStreamReader(System.in));
-    
+
             System.out.println("Hi! What's your name, Sir?");
             String name;
             try {
@@ -348,10 +348,10 @@ As you can see, all you have to do is create a new instance, set it up with the 
                 e1.printStackTrace();
                 return;
             }
-    
+
             boolean running = true;
             while (running) {
-    
+
                 String userInput;
                 try {
                     userInput = userInputReader.readLine();
@@ -396,9 +396,25 @@ As you can see, all you have to do is create a new instance, set it up with the 
                     }
                 }
             }
-    
+
             client.disconnect();
         }
     }
 
 Again, we need to set the EventHandler and policy, but this time we also want to set the NetworkEventHandler. Then, we are ready to connect to the server by specifying the IP and port.
+
+License
+=======
+Copyright 2016 Florian Mai and Jannis Mell
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
